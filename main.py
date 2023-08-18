@@ -62,7 +62,7 @@ tk_form = TkForm()
 
 # create urisina app
 app = Ursina()
-Sky(texture="nig-sky1.jpg")
+Sky(texture="images/stars.jpg")
 # config window
 window.title = 'Space Agency Simulator'
 window.borderless = False           
@@ -72,7 +72,7 @@ window.fps_counter.enabled = False
 
 # global position
 OX, OY, OZ = 0, 0, 0
-one_vector = True
+
 # camera
 camera.position = (5, 5, -5)
 camera.rotation = (35, -45, 0)
@@ -105,10 +105,7 @@ def convert_body_to_entity(body):
     return body_entity
 
 def convert_orbit_to_entity(orbit):
-    tcolor = color.blue
-    if orbit.name == "test2":
-        tcolor = color.green
-    return Entity(model = Mesh(vertices = orbit.points, mode='line'), name = f"{orbit.name}_orbit_entity", color = tcolor)
+    return Entity(model = Mesh(vertices = orbit.points, mode='line'), name = f"{orbit.name}_orbit_entity", color = color.blue)
 
 def convert_velocity_to_entity(body):
     arrow = body.velocity
