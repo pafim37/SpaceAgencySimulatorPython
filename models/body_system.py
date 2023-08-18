@@ -32,19 +32,16 @@ class BodySystem:
             self.add_body(body)
 
     def add_or_update(self, body):
-        update = False
         for b in self.__bodies:
             if b.name == body.name:
-                logging.debug(f"Updating {body.name} in body system")
-                update = True
                 self.remove_body_by_name(body.name)
-                self.add_body(body)
                 break
-        if not update:
-            logging.debug(f"Adding {body.name} to body system")
-            self.add_body(body)
+        logging.info(f"Adding or updating {body.name} to body system, number of bodies: {len(self.__bodies)} ")
+        self.add_body(body)
+        logging.info(f"Adding or updating {body.name} to body system, number of bodies: {len(self.__bodies)} ")
 
     def add_body_from_dict(self, dict):
+        logging.debug(f"Creating body from dict {dict}")
         body_name = str(dict["body_name"])
         body_position = np.array(dict["body_position"])
         body_velocity = np.array(dict["body_velocity"])
@@ -53,6 +50,7 @@ class BodySystem:
         body_color = dict["body_color"] if "body_color" in dict else color.red
         body = Body(name = body_name, position = body_position, velocity = body_velocity, mass = body_mass, radius = body_radius, color = body_color)
         self.add_or_update(body)
+        return body, self.get_orbit_by_name(body.name)
 
     def remove_body(self, body):
         self.__bodies.remove(body)

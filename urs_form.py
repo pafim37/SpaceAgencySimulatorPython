@@ -102,7 +102,25 @@ class UrsForm:
                 self.__orbits_entities.remove(orbit_entity)
                 urs.destroy(orbit_entity)
 
-        
+    def update_body_and_orbit(self, body, orbit):
+        for body_entity in self.__bodies_entities:
+            if body.name in body_entity.name:
+                self.__bodies_entities.remove(body_entity)
+                urs.destroy(body_entity)
+                break
+        for orbit_entity in self.__orbits_entities:
+            if body.name in orbit_entity.name:
+                self.__orbits_entities.remove(orbit_entity)
+                urs.destroy(orbit_entity)
+                break
+                
+        body_entity = self.__convert_body_to_entity(body)
+        self.__bodies_entities.append(body_entity)
+        if orbit is not None:
+            orbit_entity = self.__convert_orbit_to_entity(orbit)
+            orbit_entity.enabled = self.config.show_orbits
+            self.__orbits_entities.append(orbit_entity)
+
     def __convert_body_to_entity(self, body):
         body_entity = urs.Entity(model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
         if isinstance(body.texture, str):

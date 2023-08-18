@@ -25,7 +25,8 @@ class Mediator:
         match command:
             case Command.CREATE_OR_UPDATE_BODY:
                 self.log.info(f"Starting handle {command}")
-                self.body_system.add_body_from_dict(data)
+                body, orbit = self.body_system.add_body_from_dict(data)
+                self.urs_form.update_body_and_orbit(body, orbit)
                 self.log.info(f"End handle {command}")
                 return
             case Command.HANDLE_SUN:
