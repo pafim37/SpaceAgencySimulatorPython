@@ -10,6 +10,7 @@ class Body:
         self.mass = mass
         self.radius = radius
         self.center_body_name = ""
+        self.texture = color
         self.color = color
 
     def get_relative_position_to(self, body):

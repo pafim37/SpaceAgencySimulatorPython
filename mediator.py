@@ -31,6 +31,12 @@ class Mediator:
                 self.is_body_system_synchronize_with_entities = False
                 self.log.info(f"End handle {command}")
                 return
+            case Command.CREATE_MARS:
+                self.log.info(f"Starting handle {command}")
+                self.body_system.add_mars()
+                self.is_body_system_synchronize_with_entities = False
+                self.log.info(f"End handle {command}")
+                return
             case Command.SET_HOME_CAMERA:
                 self.log.info(f"Starting handle {command}")
                 self.__go_home_camera()

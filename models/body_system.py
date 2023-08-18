@@ -16,35 +16,35 @@ class BodySystem:
         self.__barycentrum_name = "Barycentrum"
         self.barycentrum = None
 
-        self.add_sun()
-        body = Body(name = "test1", position = np.array([100, 0, 0]), velocity = np.array([0, 17, 0]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body)
+        # self.add_sun()
+        # body = Body(name = "test1", position = np.array([100, 0, 0]), velocity = np.array([0, 17, 0]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body)
 
         # body = Body(name = "test1a", position = np.array([150, 150, 150]), velocity = np.array([0, 12, 0]), mass = 1, radius = 1, color = color.red)
         # self.add_body(body)
 
-        body = Body(name = "test2", position = np.array([150, 150, 0]), velocity = np.array([0, 5, 0]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body)
-        body = Body(name = "test3", position = np.array([150, 150, 0]), velocity = np.array([5, 0, 0]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body)
-        body = Body(name = "test4", position = np.array([0, 50, 0]), velocity = np.array([17, 0, 0]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body)
-        body = Body(name = "test5", position = np.array([0, 150, 0]), velocity = np.array([0, 0, 5]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body)
-        body = Body(name = "test6", position = np.array([0, 0, -50]), velocity = np.array([17, 0, 0]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body)
+        # body = Body(name = "test2", position = np.array([150, 150, 0]), velocity = np.array([0, 5, 0]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body)
+        # body = Body(name = "test3", position = np.array([150, 150, 0]), velocity = np.array([5, 0, 0]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body)
+        # body = Body(name = "test4", position = np.array([0, 50, 0]), velocity = np.array([17, 0, 0]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body)
+        # body = Body(name = "test5", position = np.array([0, 150, 0]), velocity = np.array([0, 0, 5]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body)
+        # body = Body(name = "test6", position = np.array([0, 0, -50]), velocity = np.array([17, 0, 0]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body)
 
         # body = Body(name = "test1a", position = np.array([0, 50, 0]), velocity = np.array([0, 0, 17]), mass = 1, radius = 1, color = color.red)
         # self.add_body(body)
         # body = Body(name = "test2a", position = np.array([0, 150, 150]), velocity = np.array([0, 0, 5]), mass = 1, radius = 1, color = color.red)
         # self.add_body(body)
 
-        body = Body(name = "test7", position = np.array([0, 0, -150]), velocity = np.array([0, 5, 0]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body) # doenst work
-        body = Body(name = "test8", position = np.array([-100, 100, -100]), velocity = np.array([-5, 5, 5]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body)
-        body = Body(name = "test9", position = np.array([150, 150, 150]), velocity = np.array([-3, 3, -3]), mass = 1, radius = 1, color = color.red)
-        self.add_body(body)
+        # body = Body(name = "test7", position = np.array([0, 0, -150]), velocity = np.array([0, 5, 0]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body) # doenst work
+        # body = Body(name = "test8", position = np.array([-100, 100, -100]), velocity = np.array([-5, 5, 5]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body)
+        # body = Body(name = "test9", position = np.array([150, 150, 150]), velocity = np.array([-3, 3, -3]), mass = 1, radius = 1, color = color.red)
+        # self.add_body(body)
 
     def add_body(self, body):
         if any(b.name == body.name for b in self.__bodies):
@@ -113,11 +113,15 @@ class BodySystem:
         return self.__orbits
 
     def add_sun(self):
-        body = Body(name = "Sun", position = np.zeros(3), velocity = np.zeros(3), mass = 10000, radius = 2, color = color.yellow)
+        body = Body(name = "Sun", position = np.zeros(3), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
         self.add_or_remove(body)
 
     def add_earth(self):
-        body = Body(name = "Earth", position = np.array([50, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = color.red)
+        body = Body(name = "Earth", position = np.array([50, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/earth.jpg")
+        self.add_or_remove(body)
+
+    def add_mars(self):
+        body = Body(name = "Mars", position = np.array([150, 0, 0]), velocity = np.array([0, 5, 0]), mass = 10, radius = 1, color = "images/mars.jpg")
         self.add_or_remove(body)
 
     def __update(self):

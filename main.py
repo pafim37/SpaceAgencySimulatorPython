@@ -94,12 +94,13 @@ coordinate_system_axis_y = Entity(model="arrow", scale=(10,0.2,0.2), position=(0
 coordinate_system_axis_z = Entity(model="arrow", scale=(10,0.2,0.2), position=(0,0,0), rotation=(0,-90,0), color=color.red)
 
 def convert_body_to_entity(body):
-    body_entity = Entity(model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10, color = body.color)
-    if body.name == "Sun":
-        body_entity.texture = "sun.jpg"
-    elif body.name == "Earth":
-        body_entity.texture = "earth.jpg"
-
+    body_entity = Entity(model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
+    if isinstance(body.texture, str):
+        print("choose texture")
+        body_entity.texture = body.texture
+    else:
+        print("choose color")
+        body_entity.color = body.color
     return body_entity
 
 def convert_orbit_to_entity(orbit):
