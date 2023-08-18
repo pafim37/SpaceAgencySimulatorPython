@@ -28,19 +28,19 @@ class Mediator:
                 self.body_system.add_body_from_dict(data)
                 self.log.info(f"End handle {command}")
                 return
-            case Command.CREATE_SUN:
+            case Command.HANDLE_SUN:
                 self.log.info(f"Starting handle {command}")
                 self.body_system.add_or_remove_sun()
                 self.__synchronize_bodies_and_orbits()
                 self.log.info(f"End handle {command}")
                 return
-            case Command.CREATE_EARTH:
+            case Command.HANDLE_EARTH:
                 self.log.info(f"Starting handle {command}")
                 self.body_system.add_or_remove_earth()
                 self.__synchronize_bodies_and_orbits()
                 self.log.info(f"End handle {command}")
                 return
-            case Command.CREATE_MARS:
+            case Command.HANDLE_MARS:
                 self.log.info(f"Starting handle {command}")
                 self.body_system.add_or_remove_mars()
                 self.__synchronize_bodies_and_orbits()

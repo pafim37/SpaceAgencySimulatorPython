@@ -81,11 +81,11 @@ class TkForm:
 
         btn_ids = []
 
-        add_sun_btn = tk.Button(body_default_lf, text="Add Sun", width = 15, command=lambda: self.__handle_create_command(Command.CREATE_SUN, 0, btn_ids))
+        add_sun_btn = tk.Button(body_default_lf, text="Add Sun", width = 15, command=lambda: self.__handle_create_command(Command.HANDLE_SUN, 0, btn_ids))
         add_sun_btn.grid(row = 0, column = 0, padx = 10, pady=5)
-        add_earth_btn = tk.Button(body_default_lf, text="Add Earth", width = 15, command=lambda: self.__handle_create_command(Command.CREATE_EARTH, 1, btn_ids))
+        add_earth_btn = tk.Button(body_default_lf, text="Add Earth", width = 15, command=lambda: self.__handle_create_command(Command.HANDLE_EARTH, 1, btn_ids))
         add_earth_btn.grid(row = 1, column = 0, padx = 10, pady=5)
-        add_mars_btn = tk.Button(body_default_lf, text="Add Mars", width = 15, command=lambda: self.__handle_create_command(Command.CREATE_MARS, 2, btn_ids))
+        add_mars_btn = tk.Button(body_default_lf, text="Add Mars", width = 15, command=lambda: self.__handle_create_command(Command.HANDLE_MARS, 2, btn_ids))
         add_mars_btn.grid(row = 2, column = 0, padx = 10, pady=5)
 
         btn_ids.append(add_sun_btn)
