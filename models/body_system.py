@@ -16,36 +16,6 @@ class BodySystem:
         self.__barycentrum_name = "Barycentrum"
         self.barycentrum = None
 
-        # self.add_sun()
-        # body = Body(name = "test1", position = np.array([100, 0, 0]), velocity = np.array([0, 17, 0]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-
-        # body = Body(name = "test1a", position = np.array([150, 150, 150]), velocity = np.array([0, 12, 0]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-
-        # body = Body(name = "test2", position = np.array([150, 150, 0]), velocity = np.array([0, 5, 0]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-        # body = Body(name = "test3", position = np.array([150, 150, 0]), velocity = np.array([5, 0, 0]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-        # body = Body(name = "test4", position = np.array([0, 50, 0]), velocity = np.array([17, 0, 0]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-        # body = Body(name = "test5", position = np.array([0, 150, 0]), velocity = np.array([0, 0, 5]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-        # body = Body(name = "test6", position = np.array([0, 0, -50]), velocity = np.array([17, 0, 0]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-
-        # body = Body(name = "test1a", position = np.array([0, 50, 0]), velocity = np.array([0, 0, 17]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-        # body = Body(name = "test2a", position = np.array([0, 150, 150]), velocity = np.array([0, 0, 5]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-
-        # body = Body(name = "test7", position = np.array([0, 0, -150]), velocity = np.array([0, 5, 0]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body) # doenst work
-        # body = Body(name = "test8", position = np.array([-100, 100, -100]), velocity = np.array([-5, 5, 5]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-        # body = Body(name = "test9", position = np.array([150, 150, 150]), velocity = np.array([-3, 3, -3]), mass = 1, radius = 1, color = color.red)
-        # self.add_body(body)
-
     def add_body(self, body):
         if any(b.name == body.name for b in self.__bodies):
             raise BodyAlreadyExistsException(body)
@@ -55,8 +25,10 @@ class BodySystem:
 
     def add_or_remove(self, body):
         if any(b.name == body.name for b in self.__bodies):
+            logging.info(f"Removing {body.name} from body system")
             self.remove_body_by_name(body.name)
         else:
+            logging.info(f"Adding {body.name} to body system")
             self.add_body(body)
 
     def add_or_update(self, body):
@@ -93,7 +65,7 @@ class BodySystem:
 
     def remove_orbit_by_name(self, name):
         for orbit in self.__orbits:
-            if body.name == orbit.name:
+            if name in orbit.name:
                 self.__orbits.remove(orbit)
 
     def get_body_by_name(self, name):
@@ -112,17 +84,21 @@ class BodySystem:
     def get_orbits(self):
         return self.__orbits
 
-    def add_sun(self):
+    def add_or_remove_sun(self):
         body = Body(name = "Sun", position = np.zeros(3), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
         self.add_or_remove(body)
 
-    def add_earth(self):
+    def add_or_remove_earth(self):
         body = Body(name = "Earth", position = np.array([50, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/earth.jpg")
         self.add_or_remove(body)
 
-    def add_mars(self):
+    def add_or_remove_mars(self):
         body = Body(name = "Mars", position = np.array([150, 0, 0]), velocity = np.array([0, 5, 0]), mass = 10, radius = 1, color = "images/mars.jpg")
         self.add_or_remove(body)
+
+    def register_mediator(self, mediator):
+        self.mediator = mediator
+        mediator.register_body_system(self)
 
     def __update(self):
         self.__bodies.sort(key=lambda x: x.mass)
@@ -139,10 +115,15 @@ class BodySystem:
 
     def __update_barycentrum(self): 
         total_mass = sum(body.mass for body in self.__bodies)
-        position = 1 / total_mass * sum(body.mass * body.position for body in self.__bodies)
-        self.barycentrum = Body(self.__barycentrum_name, position, np.zeros(3), total_mass, 0)
+        if total_mass == 0:
+            self.barycentrum = Body(self.__barycentrum_name, np.zeros(3), np.zeros(3), total_mass, 0)
+        else:
+            position = 1 / total_mass * sum(body.mass * body.position for body in self.__bodies)
+            self.barycentrum = Body(self.__barycentrum_name, position, np.zeros(3), total_mass, 0)
 
     def __find_orbits(self):
+        logging.info("Finding orbits")
+        self.__orbits = []
         for i in range(len(self.__bodies) - 1):
             curr_body = self.__bodies[i]
             distance = sys.float_info.max

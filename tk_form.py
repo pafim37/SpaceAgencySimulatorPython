@@ -10,6 +10,7 @@ class TkForm:
 
     def register_mediator(self, mediator):
         self.mediator = mediator
+        self.mediator.register_tk_form(self)
 
     def send_command(self, command):
         self.mediator.send(command)
@@ -17,7 +18,7 @@ class TkForm:
     def send_command_with_data(self, command, data):
         self.mediator.send(command, data)
 
-    def update_root(self):
+    def update(self):
         self.root.update()
 
     def __setup_root(self):
@@ -141,6 +142,3 @@ class TkForm:
             btn_ids[btn_id]["text"] = "Remove " + body_name
         elif verb == "Remove":
             btn_ids[btn_id]["text"] = "Add " + body_name
-
-
-

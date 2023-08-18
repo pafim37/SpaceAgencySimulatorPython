@@ -3,6 +3,9 @@ import numpy as np
 from ursina import *
 
 class Compass():
+    def __init__(self):
+        self.enabled = True
+
     def get_entities(self):
         arrow_x = Entity(model="arrow", scale=(0.5,0.5,0.5), position=(3,1.5,0), color=color.blue)
         arrow_y = Entity(model="arrow", scale=(0.5,0.5,0.5), position=(3,1.5,0), rotation=(0, 0, -90), color=color.green)
