@@ -67,6 +67,7 @@ class Mediator:
     def __set_configuration(self, data):
         self.show_coordinate_axes = data["show_coordinate_axes"]
         self.show_compass = data["show_compass"]
+        self.show_orbits = data["show_orbits"]
 
     def __go_home_camera(self):
         self.camera.position = (5, 5, -5)

@@ -36,6 +36,7 @@ class TkForm:
 
         self.coordinate_axes_enabled_var  = tk.BooleanVar(self.root, True)
         self.compass_enabled_var = tk.BooleanVar(self.root, True)
+        self.orbits_enabled_var = tk.BooleanVar(self.root, True)
 
     def __setup_frames(self):
         body_frame = self.__setup_body_frame()
@@ -47,7 +48,6 @@ class TkForm:
         default_body_frame.grid(row = 1, column = 0, padx = 10, pady=10)
         configuration_frame.grid(row = 2, column = 0, padx = 10, pady=10)
         camera_frame.grid(row = 3, column = 0, padx = 10, pady=10)
-
 
     def __setup_body_frame(self):
         setup_body_lf = tk.LabelFrame(self.root, text="Body Setup")
@@ -98,6 +98,7 @@ class TkForm:
 
         tk.Checkbutton(configuration_lf, variable = self.coordinate_axes_enabled_var, onvalue = True, offvalue = False, text = "Show coordinates axes", command = self.send_configuration).grid(row = 0, column = 0, sticky="W", padx = 10)
         tk.Checkbutton(configuration_lf, variable = self.compass_enabled_var, onvalue = True, offvalue = False, text = "Show compass", command = self.send_configuration).grid(row = 1, column = 0, sticky="W", padx = 10)
+        tk.Checkbutton(configuration_lf, variable = self.orbits_enabled_var, onvalue = True, offvalue = False, text = "Show orbits", command = self.send_configuration).grid(row = 2, column = 0, sticky="W", padx = 10)
         
         return configuration_lf
 
@@ -126,6 +127,7 @@ class TkForm:
         data = {
             "show_coordinate_axes": self.coordinate_axes_enabled_var.get(),
             "show_compass": self.compass_enabled_var.get(),
+            "show_orbits": self.orbits_enabled_var.get(),
         }
         self.send_command_with_data(Command.SET_CONFIGURATION, data)
 

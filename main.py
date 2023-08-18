@@ -51,6 +51,10 @@ def update():
     for arrow in compass_arrow_entities:
         arrow.enabled = mediator.show_compass
 
+    for orbit_entity in entities:
+        if "_orbit_entity" in orbit_entity.name:
+            orbit_entity.enabled = mediator.show_orbits
+
     tk_form.update_root()
 
 # create tkinter
@@ -65,7 +69,6 @@ window.borderless = False
 window.fullscreen = False               
 window.exit_button.visible = True      
 window.fps_counter.enabled = False   
-
 
 # global position
 OX, OY, OZ = 0, 0, 0
@@ -96,10 +99,8 @@ coordinate_system_axis_z = Entity(model="arrow", scale=(10,0.2,0.2), position=(0
 def convert_body_to_entity(body):
     body_entity = Entity(model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
     if isinstance(body.texture, str):
-        print("choose texture")
         body_entity.texture = body.texture
     else:
-        print("choose color")
         body_entity.color = body.color
     return body_entity
 
