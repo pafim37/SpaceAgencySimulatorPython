@@ -14,7 +14,9 @@ class Orbit:
     def __init__(self, body, center_body, u):
         self.name = body.name
         self.__center_body = center_body
-        self.__calculate_orbit(body.position, body.velocity, u)
+        position = body.get_relative_position_to(center_body)
+        velocity = body.get_relative_velocity_to(center_body)
+        self.__calculate_orbit(position, velocity, u)
 
     def __calculate_orbit(self, position, velocity, u):
         r = np.linalg.norm(position)
@@ -92,7 +94,7 @@ class Orbit:
                 rotated_points.append(rotated_point)
 
         # find orbit direction and rotate it
-        orbit_vector = rotated_points[peri_point_index]-self.__center_body.position
+        orbit_vector = rotated_points[peri_point_index]+self.__center_body.position
         rotation_axis = np.cross(orbit_vector, self.__position)
         angle = math.acos(np.dot(self.__normalize(orbit_vector), self.__normalize(self.__position)))
         output_points = []
@@ -105,13 +107,16 @@ class Orbit:
 
     def __get_points_and_peri_point_index(self):
         points = []
+        xp = self.__center_body.position[0]
+        yp = self.__center_body.position[1]
+        zp = self.__center_body.position[2]
         if self.shape == OrbitType.ELLIPTICAL:
             # create an ellipse
             for deg in range(0, 360):
                 c = self.__e * self.__a 
-                x = self.__a * math.sin(math.radians(deg)) - c
-                y = self.__b * math.cos(math.radians(deg))
-                z = 0
+                x = self.__a * math.sin(math.radians(deg)) - c + xp
+                y = self.__b * math.cos(math.radians(deg)) + yp
+                z = zp
                 point = Vec3(x, y, z) / 100
                 points.append(point)
             points.append(points[0])
@@ -121,9 +126,9 @@ class Orbit:
             for deg in range(-180, 180): # if change range, change peri_point_index too
                 deg /= 100 
                 c = self.__a - self.__r_min
-                x = self.__a * math.cosh(deg) - c
-                y = self.__b * math.sinh(deg)
-                z = 0
+                x = self.__a * math.cosh(deg) - c + xp
+                y = self.__b * math.sinh(deg) + yp
+                z = zp
                 points.append(Vec3(x, y, z) / 100)
             peri_point_index = 180
         return points, peri_point_index

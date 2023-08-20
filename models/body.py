@@ -16,6 +16,9 @@ class Body:
     def get_relative_position_to(self, body):
         return self.position - body.position
 
+    def get_relative_velocity_to(self, body):
+        return self.velocity - body.velocity
+
     def get_sphere_of_influence_related_to(self, body):
         # TODO: Improve that
         distance = np.linalg.norm(self.position - body.position)
