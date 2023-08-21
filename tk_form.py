@@ -1,5 +1,6 @@
 import tkinter as tk
 from commands import *
+import math
 
 class TkForm:
     def __init__(self):
@@ -16,6 +17,7 @@ class TkForm:
         self.mediator.send(command)
     
     def send_command_with_data(self, command, data):
+        print(data)
         self.mediator.send(command, data)
 
     def update(self):
@@ -23,6 +25,7 @@ class TkForm:
 
     def __setup_root(self):
         self.root.title("Setup panel")
+        self.root.geometry("720x700")
 
     def __create_variables(self):
         self.body_name_var = tk.StringVar(self.root, "Earth")
@@ -44,12 +47,15 @@ class TkForm:
         body_frame = self.__setup_body_frame()
         default_body_frame = self.__setup_default_body_frame()
         configuration_frame = self.__setup_configuration_frame()
-        camera_frame = self._setup_camera_frame()
+        camera_frame = self.__setup_camera_frame()
+        self.body_info = self.__setup_body_info()
         
         body_frame.grid(row = 0, column = 0, padx = 10, pady=10)
         default_body_frame.grid(row = 1, column = 0, padx = 10, pady=10)
         configuration_frame.grid(row = 2, column = 0, padx = 10, pady=10)
         camera_frame.grid(row = 3, column = 0, padx = 10, pady=10)
+        self.body_info.grid(row = 0, column = 1, padx = 10, pady = 10, rowspan = 4, sticky=tk.N)
+
 
     def __setup_body_frame(self):
         setup_body_lf = tk.LabelFrame(self.root, text="Body Setup")
@@ -104,7 +110,7 @@ class TkForm:
         tk.Checkbutton(configuration_lf, variable = self.barycentrum_enabled_var, onvalue = True, offvalue = False, text = "Calibrate barycentrum to zero", command = self.__calibrate_barycentrum_to_zero).grid(row = 3, column = 0, sticky="W", padx = 10)
         return configuration_lf
 
-    def _setup_camera_frame(self):
+    def __setup_camera_frame(self):
         camera_lf = tk.LabelFrame(self.root, text="Camera")
 
         tk.Button(camera_lf, text="Set HOME camera", width = 15, command=lambda: self.send_command(Command.SET_HOME_CAMERA)).grid(row = 0, column = 0, padx = 10, pady=5)
@@ -125,6 +131,13 @@ class TkForm:
 
         self.send_command_with_data(Command.CREATE_OR_UPDATE_BODY, data)
 
+    def __setup_body_info(self):
+        body_info_lf = tk.LabelFrame(self.root, text="Body / Orbit info")
+        body_frame = tk.Frame(body_info_lf)
+        tk.Label(body_frame, text="Here will appear of your body info").grid(row = 0, column = 0, padx = 10, pady=5)
+        body_frame.grid(row = 0, column = 0)
+        return body_info_lf
+
     def send_configuration(self):
         data = {
             "show_coordinate_axes": self.coordinate_axes_enabled_var.get(),
@@ -132,6 +145,33 @@ class TkForm:
             "show_orbits": self.orbits_enabled_var.get(),
         }
         self.send_command_with_data(Command.SET_CONFIGURATION, data)
+
+    def synchronize_bodies_and_orbits(self, bodies, orbits):
+        for widget in self.body_info.winfo_children():
+            if isinstance(widget, tk.Frame):
+                widget.destroy()
+        row = 0
+        for body in bodies:
+            body_frame = tk.Frame(self.body_info)
+
+            tk.Label(body_frame, text=f"Name: {body.name}").grid(row = 0, column = 0, sticky=tk.W)
+            tk.Label(body_frame, text=f"Position: <{round(body.position[0])}, {round(body.position[1])}, {round(body.position[2])}>").grid(row = 1, column = 0, sticky=tk.W)
+            tk.Label(body_frame, text=f"Velocity: <{round(body.velocity[0])}, {round(body.velocity[1])}, {round(body.velocity[2])}>").grid(row = 2, column = 0, sticky=tk.W)
+            tk.Label(body_frame, text=f"Mass: {round(body.mass)}").grid(row = 3, column = 0, sticky=tk.W)
+            tk.Label(body_frame, text=f"Radius: {round(body.radius)}").grid(row = 4, column = 0, sticky=tk.W)
+            tk.Label(body_frame, text=f"Revolving: {body.center_body_name}").grid(row = 5, column = 0, sticky=tk.W)
+            orbit = [orbit for orbit in orbits if body.name == orbit.name]
+            if len(orbit) > 0:
+                orbit = orbit[0]
+                tk.Label(body_frame, text=f"Shape: {orbit.shape}").grid(row = 1, column = 1, sticky=tk.W)
+                tk.Label(body_frame, text=f"Semi major axis: {round(orbit.semi_major_axis)}").grid(row = 2, column = 1, sticky=tk.W)
+                tk.Label(body_frame, text=f"Semi minor axis: {round(orbit.semi_minor_axis)}").grid(row = 3, column = 1, sticky=tk.W)
+                tk.Label(body_frame, text=f"Eccentricity: {round(orbit.eccentricity, 4)}").grid(row = 4, column = 1, sticky=tk.W)
+                tk.Label(body_frame, text=f"True anomaly: {round(math.degrees(orbit.true_anomaly))}").grid(row = 5, column = 1, sticky=tk.W)
+
+            body_frame.grid(row = row, column = 0, padx = 10, pady = 10, sticky=tk.W)
+            row += 1
+        
 
     def __handle_create_command(self, command, btn_id, btn_ids):
         self.send_command(command)
@@ -146,3 +186,6 @@ class TkForm:
 
     def __calibrate_barycentrum_to_zero(self):
         self.send_command_with_data(Command.CALIBRATE_BARYCENTRUM_TO_ZERO, self.barycentrum_enabled_var.get())
+
+    def p(self, t):
+        print(t)

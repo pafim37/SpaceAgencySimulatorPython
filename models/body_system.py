@@ -48,15 +48,14 @@ class BodySystem:
             # update
             body.position = np.array(dict["body_position"])
             body.velocity = np.array(dict["body_velocity"])
-            body.mass = np.array(dict["body_mass"]) if "body_mass" in dict else body.mass
-            print(body.mass)
-            body.radius = np.array(dict["body_radius"]) if "body_radius" in dict else body.radius
+            body.mass = float(dict["body_mass"]) if "body_mass" in dict else body.mass
+            body.radius = float(dict["body_radius"]) if "body_radius" in dict else body.radius
         else:
             # add
             body_position = np.array(dict["body_position"])
             body_velocity = np.array(dict["body_velocity"])
-            body_mass = np.array(dict["body_mass"])if "body_mass" in dict else 1
-            body_radius = np.array(dict["body_radius"]) if "body_radius" in dict else 1
+            body_mass = float(dict["body_mass"])if "body_mass" in dict else 1
+            body_radius = float(dict["body_radius"]) if "body_radius" in dict else 1
             body_color = self.__get_body_color(body_name)
             body = Body(name = body_name, position = body_position, velocity = body_velocity, mass = body_mass, radius = body_radius, color = body_color)
             self.add_or_update(body)

@@ -114,7 +114,7 @@ class Orbit:
 
     def __get_points_and_peri_point_index(self):
         points = []
-        if self.shape == OrbitType.ELLIPTICAL:
+        if self.__shape == OrbitType.ELLIPTICAL:
             # create an ellipse
             for deg in range(0, 360):
                 c = self.__e * self.__a 
@@ -145,7 +145,17 @@ class Orbit:
 
     @property
     def shape(self):
-        return self.__shape
+        match self.__shape:
+            case OrbitType.ELLIPTICAL:
+                return "Elliptical"
+            case OrbitType.HYPERBOLIC:
+                return "Hyperbolic"
+            case OrbitType.CIRCULAR:
+                return "Circular"
+            case OrbitType.PARABOLIC:
+                return "Parabolic"
+            case _:
+                return "None"
 
     @property
     def semi_major_axis(self):
@@ -160,7 +170,7 @@ class Orbit:
         return self.__e
 
     @property
-    def eccentricity(self):
+    def true_anomaly(self):
         return self.__phi
 
     @property
