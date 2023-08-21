@@ -123,6 +123,8 @@ class BodySystem:
 
     def __find_orbits(self):
         logging.info("Finding orbits")
+        for body in self.__bodies:
+            body.center_body_name = ""
         self.__orbits = []
         for i in range(len(self.__bodies) - 1):
             curr_body = self.__bodies[i]
