@@ -61,46 +61,26 @@ class UrsForm:
         self.mediator = mediator
         mediator.register_urs_form(self)
 
-    def synchronize_bodies(self, bodies):
-        for body in bodies:
-            found = False
-            for body_entity in self.__bodies_entities:
-                if body.name in body_entity.name:
-                    found = True
-                    break
-            if not found:
-                entity = self.__convert_body_to_entity(body)
-                self.__bodies_entities.append(entity)
+    def synchronize_bodies_and_orbits(self, bodies, orbits):
+        self.__synchronize_bodies(bodies)
+        self.__synchronize_orbits(orbits)
 
+    def __synchronize_bodies(self, bodies):
         for body_entity in self.__bodies_entities:
-            found = False
-            for body in bodies:
-                if body.name in body_entity.name:
-                    found = True
-            if not found:
-                self.__bodies_entities.remove(body_entity)
-                urs.destroy(body_entity)
+            urs.destroy(body_entity)
+        self.__bodies_entities = []
+        for body in bodies:
+            entity = self.__convert_body_to_entity(body)
+            self.__bodies_entities.append(entity)
 
-    def synchronize_orbits(self, orbits):
-        for orbit in orbits:
-            found = False
-            for orbit_entity in self.__orbits_entities:
-                if orbit.name in orbit_entity.name:
-                    found = True
-                    break
-            if not found:
-                entity = self.__convert_orbit_to_entity(orbit)
-                entity.enabled = self.config.show_orbits
-                self.__orbits_entities.append(entity)
-
+    def __synchronize_orbits(self, orbits):
         for orbit_entity in self.__orbits_entities:
-            found = False
-            for orbit in orbits:
-                if orbit.name in orbit_entity.name:
-                    found = True
-            if not found:
-                self.__orbits_entities.remove(orbit_entity)
-                urs.destroy(orbit_entity)
+            urs.destroy(orbit_entity)
+        self.__orbits_entities = []
+        for orbit in orbits:
+            entity = self.__convert_orbit_to_entity(orbit)
+            entity.enabled = self.config.show_orbits
+            self.__orbits_entities.append(entity)
 
     def update_body_and_orbit(self, body, orbit):
         for body_entity in self.__bodies_entities:

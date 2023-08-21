@@ -15,13 +15,13 @@ class BodySystem:
         self.__G = G
         self.__barycentrum_name = "Barycentrum"
         self.barycentrum = None
+        self.calibrate_barycentrum = False
 
     def add_body(self, body):
         if any(b.name == body.name for b in self.__bodies):
             raise BodyAlreadyExistsException(body)
         else:
             self.__bodies.append(body)
-            self.__update()
 
     def add_or_remove(self, body):
         if any(b.name == body.name for b in self.__bodies):
@@ -50,31 +50,19 @@ class BodySystem:
         body_color = dict["body_color"] if "body_color" in dict else color.red
         body = Body(name = body_name, position = body_position, velocity = body_velocity, mass = body_mass, radius = body_radius, color = body_color)
         self.add_or_update(body)
-        return body, self.get_orbit_by_name(body.name)
 
     def remove_body(self, body):
         self.__bodies.remove(body)
-        self.__update()
 
     def remove_body_by_name(self, name):
         for body in self.__bodies:
             if body.name == name:
                 self.remove_body(body)
 
-    def remove_orbit_by_name(self, name):
-        for orbit in self.__orbits:
-            if name in orbit.name:
-                self.__orbits.remove(orbit)
-
     def get_body_by_name(self, name):
         for body in self.__bodies:
             if body.name == name:
                 return body
-
-    def get_orbit_by_name(self, name):
-        for orbit in self.__orbits:
-            if orbit.name == name:
-                return orbit
 
     def get_bodies(self):
         return self.__bodies
@@ -83,22 +71,22 @@ class BodySystem:
         return self.__orbits
 
     def add_or_remove_sun(self):
-        body = Body(name = "Sun", position = np.zeros(3), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
+        body = Body(name = "Sun", position = np.array([50.0, 0, 0]), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
         self.add_or_remove(body)
 
     def add_or_remove_earth(self):
-        body = Body(name = "Earth", position = np.array([50, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/earth.jpg")
+        body = Body(name = "Earth", position = np.array([100.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/earth.jpg")
         self.add_or_remove(body)
 
     def add_or_remove_mars(self):
-        body = Body(name = "Mars", position = np.array([150, 0, 0]), velocity = np.array([0, 5, 0]), mass = 10, radius = 1, color = "images/mars.jpg")
+        body = Body(name = "Mars", position = np.array([150.0, 0, 0]), velocity = np.array([0, 5, 0]), mass = 10, radius = 1, color = "images/mars.jpg")
         self.add_or_remove(body)
 
     def register_mediator(self, mediator):
         self.mediator = mediator
         mediator.register_body_system(self)
 
-    def __update(self):
+    def update(self):
         self.__bodies.sort(key=lambda x: x.mass)
         self.__update_u()
         self.__update_barycentrum()
@@ -114,10 +102,14 @@ class BodySystem:
     def __update_barycentrum(self): 
         total_mass = sum(body.mass for body in self.__bodies)
         if total_mass == 0:
-            self.barycentrum = Body(self.__barycentrum_name, np.zeros(3), np.zeros(3), total_mass, 0)
+            self.barycentrum = Body(name = self.__barycentrum_name, position = np.zeros(3), velocity = np.zeros(3), mass = total_mass, radius = 0)
         else:
             position = 1 / total_mass * sum(body.mass * body.position for body in self.__bodies)
-            self.barycentrum = Body(self.__barycentrum_name, position, np.zeros(3), total_mass, 0)
+            self.barycentrum = Body(name = self.__barycentrum_name, position = position, velocity = np.zeros(3), mass = total_mass, radius = 0)
+        if self.calibrate_barycentrum:
+            for body in self.__bodies:
+                body.position -= self.barycentrum.position
+            self.barycentrum.position -= self.barycentrum.position
 
     def __find_orbits(self):
         logging.info("Finding orbits")

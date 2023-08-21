@@ -9,6 +9,7 @@ class Mediator:
         self.camera = None
         self.log = logging.getLogger(__name__)
 
+    # TODO: create interface for those components
     def register_tk_form(self, tk_form):
         self.tk_form = tk_form
 
@@ -25,26 +26,26 @@ class Mediator:
         match command:
             case Command.CREATE_OR_UPDATE_BODY:
                 self.log.info(f"Starting handle {command}")
-                body, orbit = self.body_system.add_body_from_dict(data)
-                self.urs_form.update_body_and_orbit(body, orbit)
+                self.body_system.add_body_from_dict(data)
+                self.__update_body_system_on_backend_and_frontend()
                 self.log.info(f"End handle {command}")
                 return
             case Command.HANDLE_SUN:
                 self.log.info(f"Starting handle {command}")
                 self.body_system.add_or_remove_sun()
-                self.__synchronize_bodies_and_orbits()
+                self.__update_body_system_on_backend_and_frontend()
                 self.log.info(f"End handle {command}")
                 return
             case Command.HANDLE_EARTH:
                 self.log.info(f"Starting handle {command}")
                 self.body_system.add_or_remove_earth()
-                self.__synchronize_bodies_and_orbits()
+                self.__update_body_system_on_backend_and_frontend()
                 self.log.info(f"End handle {command}")
                 return
             case Command.HANDLE_MARS:
                 self.log.info(f"Starting handle {command}")
                 self.body_system.add_or_remove_mars()
-                self.__synchronize_bodies_and_orbits()
+                self.__update_body_system_on_backend_and_frontend()
                 self.log.info(f"End handle {command}")
                 return
             case Command.SET_HOME_CAMERA:
@@ -73,10 +74,16 @@ class Mediator:
                 self.urs_form.set_configuration(self.config)
                 self.log.info(f"End handle {command}")
                 return
+            case Command.CALIBRATE_BARYCENTRUM_TO_ZERO:
+                self.log.info(f"Starting handle {command}")
+                self.body_system.calibrate_barycentrum = data
+                self.__update_body_system_on_backend_and_frontend()
+                self.log.info(f"End handle {command}")
+                return
             case _:
                 self.log.info(f"Did not found {command}")
         return
-        
-    def __synchronize_bodies_and_orbits(self):
-        self.urs_form.synchronize_bodies(self.body_system.get_bodies())
-        self.urs_form.synchronize_orbits(self.body_system.get_orbits())
+
+    def __update_body_system_on_backend_and_frontend(self):
+        self.body_system.update()
+        self.urs_form.synchronize_bodies_and_orbits(self.body_system.get_bodies(), self.body_system.get_orbits())

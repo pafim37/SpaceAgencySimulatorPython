@@ -38,6 +38,7 @@ class TkForm:
         self.coordinate_axes_enabled_var  = tk.BooleanVar(self.root, True)
         self.compass_enabled_var = tk.BooleanVar(self.root, True)
         self.orbits_enabled_var = tk.BooleanVar(self.root, True)
+        self.barycentrum_enabled_var = tk.BooleanVar(self.root, False)
 
     def __setup_frames(self):
         body_frame = self.__setup_body_frame()
@@ -100,7 +101,7 @@ class TkForm:
         tk.Checkbutton(configuration_lf, variable = self.coordinate_axes_enabled_var, onvalue = True, offvalue = False, text = "Show coordinates axes", command = self.send_configuration).grid(row = 0, column = 0, sticky="W", padx = 10)
         tk.Checkbutton(configuration_lf, variable = self.compass_enabled_var, onvalue = True, offvalue = False, text = "Show compass", command = self.send_configuration).grid(row = 1, column = 0, sticky="W", padx = 10)
         tk.Checkbutton(configuration_lf, variable = self.orbits_enabled_var, onvalue = True, offvalue = False, text = "Show orbits", command = self.send_configuration).grid(row = 2, column = 0, sticky="W", padx = 10)
-        
+        tk.Checkbutton(configuration_lf, variable = self.barycentrum_enabled_var, onvalue = True, offvalue = False, text = "Calibrate barycentrum to zero", command = self.__calibrate_barycentrum_to_zero).grid(row = 3, column = 0, sticky="W", padx = 10)
         return configuration_lf
 
     def _setup_camera_frame(self):
@@ -142,3 +143,6 @@ class TkForm:
             btn_ids[btn_id]["text"] = "Remove " + body_name
         elif verb == "Remove":
             btn_ids[btn_id]["text"] = "Add " + body_name
+
+    def __calibrate_barycentrum_to_zero(self):
+        self.send_command_with_data(Command.CALIBRATE_BARYCENTRUM_TO_ZERO, self.barycentrum_enabled_var.get())
