@@ -43,13 +43,23 @@ class BodySystem:
     def add_body_from_dict(self, dict):
         logging.debug(f"Creating body from dict {dict}")
         body_name = str(dict["body_name"])
-        body_position = np.array(dict["body_position"])
-        body_velocity = np.array(dict["body_velocity"])
-        body_mass = np.array(dict["body_mass"])if "body_mass" in dict else 1
-        body_radius = np.array(dict["body_radius"]) if "body_radius" in dict else 1
-        body_color = dict["body_color"] if "body_color" in dict else color.red
-        body = Body(name = body_name, position = body_position, velocity = body_velocity, mass = body_mass, radius = body_radius, color = body_color)
-        self.add_or_update(body)
+        body = self.get_body_by_name(body_name)
+        if body is not None:
+            # update
+            body.position = np.array(dict["body_position"])
+            body.velocity = np.array(dict["body_velocity"])
+            body.mass = np.array(dict["body_mass"]) if "body_mass" in dict else body.mass
+            print(body.mass)
+            body.radius = np.array(dict["body_radius"]) if "body_radius" in dict else body.radius
+        else:
+            # add
+            body_position = np.array(dict["body_position"])
+            body_velocity = np.array(dict["body_velocity"])
+            body_mass = np.array(dict["body_mass"])if "body_mass" in dict else 1
+            body_radius = np.array(dict["body_radius"]) if "body_radius" in dict else 1
+            body_color = self.__get_body_color(body_name)
+            body = Body(name = body_name, position = body_position, velocity = body_velocity, mass = body_mass, radius = body_radius, color = body_color)
+            self.add_or_update(body)
 
     def remove_body(self, body):
         self.__bodies.remove(body)
@@ -132,6 +142,30 @@ class BodySystem:
                 orbit = Orbit(curr_body, center_body, u)
                 self.__orbits.append(orbit)
         self.__bodies[-1].center_body_name = self.barycentrum.name
+
+    def __get_body_color(self, body_name):
+        if body_name == "Earth":
+            return "images/earth.jpg"
+        elif body_name == "Jupiter":
+            return "images/jupiter.jpg"
+        elif body_name == "Mars":
+            return "images/mars.jpg"
+        elif body_name == "Neptune":
+            return "images/neptune.jpg"
+        elif body_name == "Saturn":
+            return "images/saturn.jpg"
+        elif body_name == "Sun":
+            return "images/sun.jpg"
+        elif body_name == "Uranus":
+            return "images/uranus.jpg"
+        elif body_name == "Venus":
+            return "images/venus.jpg"
+        elif body_name == "Mercury":
+            return "images/mercury.jpg"
+        elif body_name == "Moon":
+            return "images/moon.jpg"
+        else:
+            return color.red
 
     def __str__(self):
         output = ""
