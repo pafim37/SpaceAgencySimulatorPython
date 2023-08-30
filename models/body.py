@@ -1,17 +1,18 @@
 import math 
 import numpy as np
 from ursina import *
+from models.coordinate_axes import CoordinateAxes 
 
 class Body:
-    def __init__(self, name, position, velocity, mass = 1, radius = 1, color = color.red):
+    def __init__(self, name, position, velocity, mass = 1, color = color.red):
         self.name = name
         self.position = position
         self.velocity = velocity
         self.mass = mass
-        self.radius = radius
-        self.center_body_name = ""
+        self.center_body_name = "" # TODO: change that
         self.texture = color
         self.color = color
+        self.local_coordinate_system = CoordinateAxes(name, position)
 
     def get_relative_position_to(self, body):
         return self.position - body.position

@@ -1,5 +1,6 @@
 import math
 from models.body import Body
+from models.sphere_body import SphereBody
 from models.orbit import Orbit
 import numpy as np
 import sys
@@ -57,7 +58,7 @@ class BodySystem:
             body_mass = float(dict["body_mass"])if "body_mass" in dict else 1
             body_radius = float(dict["body_radius"]) if "body_radius" in dict else 1
             body_color = self.__get_body_color(body_name)
-            body = Body(name = body_name, position = body_position, velocity = body_velocity, mass = body_mass, radius = body_radius, color = body_color)
+            body = SphereBody(name = body_name, position = body_position, velocity = body_velocity, mass = body_mass, radius = body_radius, color = body_color)
             self.add_or_update(body)
 
     def remove_body(self, body):
@@ -80,15 +81,15 @@ class BodySystem:
         return self.__orbits
 
     def add_or_remove_sun(self):
-        body = Body(name = "Sun", position = np.array([50.0, 0, 0]), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
+        body = SphereBody(name = "Sun", position = np.array([50.0, 0, 0]), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
         self.add_or_remove(body)
 
     def add_or_remove_earth(self):
-        body = Body(name = "Earth", position = np.array([100.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/earth.jpg")
+        body = SphereBody(name = "Earth", position = np.array([100.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/earth.jpg")
         self.add_or_remove(body)
 
     def add_or_remove_mars(self):
-        body = Body(name = "Mars", position = np.array([150.0, 0, 0]), velocity = np.array([0, 5, 0]), mass = 10, radius = 1, color = "images/mars.jpg")
+        body = SphereBody(name = "Mars", position = np.array([150.0, 0, 0]), velocity = np.array([0, 5, 0]), mass = 10, radius = 1, color = "images/mars.jpg")
         self.add_or_remove(body)
 
     def register_mediator(self, mediator):
@@ -111,10 +112,10 @@ class BodySystem:
     def __update_barycentrum(self): 
         total_mass = sum(body.mass for body in self.__bodies)
         if total_mass == 0:
-            self.barycentrum = Body(name = self.__barycentrum_name, position = np.zeros(3), velocity = np.zeros(3), mass = total_mass, radius = 0)
+            self.barycentrum = SphereBody(name = self.__barycentrum_name, position = np.zeros(3), velocity = np.zeros(3), mass = total_mass, radius = 0)
         else:
             position = 1 / total_mass * sum(body.mass * body.position for body in self.__bodies)
-            self.barycentrum = Body(name = self.__barycentrum_name, position = position, velocity = np.zeros(3), mass = total_mass, radius = 0)
+            self.barycentrum = SphereBody(name = self.__barycentrum_name, position = position, velocity = np.zeros(3), mass = total_mass, radius = 0)
         if self.calibrate_barycentrum:
             for body in self.__bodies:
                 body.position -= self.barycentrum.position

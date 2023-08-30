@@ -4,6 +4,7 @@ import math
 import numpy as np
 from models.coordinate_axes import CoordinateAxes
 from models.compass import Compass
+from scipy.spatial.transform import Rotation as R
 
 class UrsForm:
     def __init__(self):
@@ -15,6 +16,7 @@ class UrsForm:
         self.__setup_compass()
         self.__setup_coordinate_axes()
         self.__bodies_entities = []
+        self.__bodies_coordinate_system_entities = []
         self.__orbits_entities = []
 
     def __setup_camera(self):
@@ -38,7 +40,7 @@ class UrsForm:
         self.compass_entities = self.compass.get_entities()
 
     def __setup_coordinate_axes(self):
-        self.coordinate_axes = CoordinateAxes()
+        self.coordinate_axes = CoordinateAxes("Global Origin", np.array([0, 0, 0]), scale=1)
         self.coordinate_axes_entities = self.coordinate_axes.get_entities()
 
     def update_compass(self):
@@ -52,6 +54,9 @@ class UrsForm:
     def configure_coordinate_axes(self, enabled):
         for entity in self.coordinate_axes_entities:
             entity.enabled = enabled
+        for entity in self.__bodies_coordinate_system_entities:
+            for e in entity:
+                e.enabled = enabled
 
     def configure_orbits(self, enabled):
         for entity in self.__orbits_entities:
@@ -68,10 +73,16 @@ class UrsForm:
     def __synchronize_bodies(self, bodies):
         for body_entity in self.__bodies_entities:
             urs.destroy(body_entity)
+        for body_coordinate_system_entity in self.__bodies_coordinate_system_entities:
+            for entity in body_coordinate_system_entity:
+                urs.destroy(entity)
         self.__bodies_entities = []
+        self.__bodies_coordinate_system_entities = []
         for body in bodies:
             entity = self.__convert_body_to_entity(body)
             self.__bodies_entities.append(entity)
+            entities = body.local_coordinate_system.get_entities()
+            self.__bodies_coordinate_system_entities.append(entities)
 
     def __synchronize_orbits(self, orbits):
         for orbit_entity in self.__orbits_entities:
