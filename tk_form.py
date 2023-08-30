@@ -150,6 +150,7 @@ class TkForm:
         for widget in self.body_info.winfo_children():
             if isinstance(widget, tk.Frame):
                 widget.destroy()
+
         row = 0
         for body in bodies:
             body_frame = tk.Frame(self.body_info)
@@ -168,10 +169,18 @@ class TkForm:
                 tk.Label(body_frame, text=f"Semi minor axis: {round(orbit.semi_minor_axis)}").grid(row = 3, column = 1, sticky=tk.W)
                 tk.Label(body_frame, text=f"Eccentricity: {round(orbit.eccentricity, 4)}").grid(row = 4, column = 1, sticky=tk.W)
                 tk.Label(body_frame, text=f"True anomaly: {round(math.degrees(orbit.true_anomaly))}").grid(row = 5, column = 1, sticky=tk.W)
-
+            
+            tk.Button(body_frame, text=f"Remove {body.name}", command=lambda id=body.name: self.remove_body(id)).grid(row = 6, column = 0, columnspan=2)
             body_frame.grid(row = row, column = 0, padx = 10, pady = 10, sticky=tk.W)
             row += 1
-        
+    
+    def remove_body(self, name):
+        if name == "Sun":
+            self.send_command(Command.HANDLE_SUN)
+        elif name == "Earth":
+            self.send_command(Command.HANDLE_EARTH)
+        if name == "Mars":
+            self.send_command(Command.HANDLE_MARS)
 
     def __handle_create_command(self, command, btn_id, btn_ids):
         self.send_command(command)
