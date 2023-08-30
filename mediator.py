@@ -30,21 +30,9 @@ class Mediator:
                 self.__update_body_system_on_backend_and_frontend()
                 self.log.info(f"End handle {command}")
                 return
-            case Command.HANDLE_SUN:
+            case Command.REMOVE_BODY:
                 self.log.info(f"Starting handle {command}")
-                self.body_system.add_or_remove_sun()
-                self.__update_body_system_on_backend_and_frontend()
-                self.log.info(f"End handle {command}")
-                return
-            case Command.HANDLE_EARTH:
-                self.log.info(f"Starting handle {command}")
-                self.body_system.add_or_remove_earth()
-                self.__update_body_system_on_backend_and_frontend()
-                self.log.info(f"End handle {command}")
-                return
-            case Command.HANDLE_MARS:
-                self.log.info(f"Starting handle {command}")
-                self.body_system.add_or_remove_mars()
+                self.body_system.remove_body_by_name(data)
                 self.__update_body_system_on_backend_and_frontend()
                 self.log.info(f"End handle {command}")
                 return
@@ -80,6 +68,8 @@ class Mediator:
                 self.__update_body_system_on_backend_and_frontend()
                 self.log.info(f"End handle {command}")
                 return
+            case Command.UPDATE:
+                self.__update_body_system_on_backend_and_frontend()
             case _:
                 self.log.info(f"Did not found {command}")
         return

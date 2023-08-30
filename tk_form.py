@@ -154,12 +154,7 @@ class TkForm:
             row += 1
     
     def remove_body(self, name):
-        if name == "Sun":
-            self.send_command(Command.HANDLE_SUN)
-        elif name == "Earth":
-            self.send_command(Command.HANDLE_EARTH)
-        if name == "Mars":
-            self.send_command(Command.HANDLE_MARS)
+        self.send_command_with_data(Command.REMOVE_BODY, data = name)
 
     def __calibrate_barycentrum_to_zero(self):
         self.send_command_with_data(Command.CALIBRATE_BARYCENTRUM_TO_ZERO, self.barycentrum_enabled_var.get())

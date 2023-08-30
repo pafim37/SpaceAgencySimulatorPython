@@ -37,9 +37,7 @@ class App:
         self.config.register_mediator(mediator) 
 
         self.tk_form.send_configuration()
-        mediator.send(Command.HANDLE_SUN)
-        mediator.send(Command.HANDLE_EARTH)
-        mediator.send(Command.HANDLE_MARS)
+        mediator.send(Command.UPDATE)
 
     def run(self):
         running = True

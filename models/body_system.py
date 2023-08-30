@@ -17,6 +17,10 @@ class BodySystem:
         self.__barycentrum_name = "Barycentrum"
         self.barycentrum = None
         self.calibrate_barycentrum = False
+        self.__add_sun()
+        self.__add_earth() 
+        self.__add_moon() 
+        self.__add_mars()
 
     def add_body(self, body):
         if any(b.name == body.name for b in self.__bodies):
@@ -80,17 +84,21 @@ class BodySystem:
     def get_orbits(self):
         return self.__orbits
 
-    def add_or_remove_sun(self):
+    def __add_sun(self):
         body = SphereBody(name = "Sun", position = np.array([50.0, 0, 0]), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
-        self.add_or_remove(body)
+        self.add_body(body)
 
-    def add_or_remove_earth(self):
+    def __add_earth(self):
         body = SphereBody(name = "Earth", position = np.array([100.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/earth.jpg")
-        self.add_or_remove(body)
+        self.add_body(body)
 
-    def add_or_remove_mars(self):
+    def __add_moon(self):
+        body = SphereBody(name = "Moon", position = np.array([100.0, 50, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/moon.jpg")
+        self.add_body(body)
+
+    def __add_mars(self):
         body = SphereBody(name = "Mars", position = np.array([150.0, 0, 0]), velocity = np.array([0, 5, 0]), mass = 10, radius = 1, color = "images/mars.jpg")
-        self.add_or_remove(body)
+        self.add_body(body)
 
     def register_mediator(self, mediator):
         self.mediator = mediator
