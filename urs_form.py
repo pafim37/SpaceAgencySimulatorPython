@@ -51,12 +51,11 @@ class UrsForm:
         for entity in self.compass_entities:
             entity.enabled = enabled
     
-    def configure_coordinate_axes(self, enabled):
+    def configure_coordinate_axes(self):
         for entity in self.coordinate_axes_entities:
-            entity.enabled = enabled
+            entity.enabled = self.config.show_coordinate_axes
         for entity in self.__bodies_coordinate_system_entities:
-            for e in entity:
-                e.enabled = enabled
+            entity.enabled = self.config.show_coordinate_axes
 
     def configure_orbits(self, enabled):
         for entity in self.__orbits_entities:
@@ -74,15 +73,15 @@ class UrsForm:
         for body_entity in self.__bodies_entities:
             urs.destroy(body_entity)
         for body_coordinate_system_entity in self.__bodies_coordinate_system_entities:
-            for entity in body_coordinate_system_entity:
-                urs.destroy(entity)
+            urs.destroy(body_coordinate_system_entity)
         self.__bodies_entities = []
         self.__bodies_coordinate_system_entities = []
         for body in bodies:
             entity = self.__convert_body_to_entity(body)
             self.__bodies_entities.append(entity)
             entities = body.local_coordinate_system.get_entities()
-            self.__bodies_coordinate_system_entities.append(entities)
+            self.__bodies_coordinate_system_entities.extend(entities)
+        self.configure_coordinate_axes()
 
     def __synchronize_orbits(self, orbits):
         for orbit_entity in self.__orbits_entities:
@@ -168,7 +167,7 @@ class UrsForm:
         # TODO: consider self.config when adding new orbit
         self.config = config
         self.configure_compass(config.show_compass)
-        self.configure_coordinate_axes(config.show_coordinate_axes)
+        self.configure_coordinate_axes()
         self.configure_orbits(config.show_orbits)
 
     def go_home_camera(self):

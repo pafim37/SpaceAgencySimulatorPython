@@ -13,6 +13,7 @@ from tk_form import TkForm
 from mediator import Mediator
 import logging
 from urs_form import UrsForm
+from commands import *
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -36,6 +37,9 @@ class App:
         self.config.register_mediator(mediator) 
 
         self.tk_form.send_configuration()
+        mediator.send(Command.HANDLE_SUN)
+        mediator.send(Command.HANDLE_EARTH)
+        mediator.send(Command.HANDLE_MARS)
 
     def run(self):
         running = True
