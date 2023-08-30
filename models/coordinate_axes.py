@@ -15,7 +15,6 @@ class CoordinateAxes:
         self.scale = scale
 
     def get_entities(self):
-        print(self.origin)
         # TODO: consider scale
         scale = np.array([10 * self.scale, 0.2, 0.2])
         coordinate_system_axis_x = urs.Entity(model="arrow", name = self.name, scale=scale, position=self.origin / 100, color=urs.color.blue)
