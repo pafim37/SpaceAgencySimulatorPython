@@ -70,8 +70,14 @@ class Mediator:
                 return
             case Command.UPDATE:
                 self.__update_body_system_on_backend_and_frontend()
+                return
+            case Command.FOCUS_ON:
+                self.__update_body_system_on_backend_and_frontend()
+                self.urs_form.set_position_camera(data)
+                return
             case _:
                 self.log.info(f"Did not found {command}")
+                return
         return
 
     def __update_body_system_on_backend_and_frontend(self):

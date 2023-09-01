@@ -186,6 +186,12 @@ class UrsForm:
         self.camera.position = (0, 0, -10)
         self.camera.rotation = (0, 0, 0)
 
+    def set_position_camera(self, entity_name):
+        entity = next((e for e in self.__bodies_entities if entity_name in e.name), None)
+        position = entity.position
+        self.camera.position = (position[0], position[1], position[2] - 10)
+        self.camera.rotation = (0, 0, 0)
+
 if __name__=="__main__":
     app = UrsForm()
     start = time.time()

@@ -144,6 +144,32 @@ class BodySystem:
         self.__add_earth() 
         self.__add_moon() 
         self.__add_mars()
+        # self.__add_jupiter()
+        # self.__add_neptune()
+
+    # def __add_sun(self):
+    #     body = SphereBody(name = "Sun", position = np.array([0, 0, 0], dtype=float), velocity = np.zeros(3), mass = 2 * math.pow(10, 30), radius = 10, color = "images/sun.jpg")
+    #     self.add_body(body)
+
+    # def __add_earth(self):
+    #     body = SphereBody(name = "Earth", position = np.array([1.5 * math.pow(10, 11), 0, 0]), velocity = np.array([0, 28000, 0]), mass = 6 * math.pow(10, 24), radius = 2, color = "images/earth.jpg")
+    #     self.add_body(body)
+
+    # def __add_moon(self):
+    #     body = SphereBody(name = "Moon", position = np.array([1.5038 * math.pow(10, 11), 0, 0], dtype=float), velocity = np.array([0, 30000, 0]), mass = 7.3 * math.pow(10, 22), radius = 1, color = "images/moon.jpg")
+    #     self.add_body(body)
+
+    # def __add_mars(self):
+    #     body = SphereBody(name = "Mars", position = np.array([2.2792 * math.pow(10, 11), 0, 0]), velocity = np.array([0, 5, 0]), mass = 6.4 * math.pow(10, 23), radius = 1, color = "images/mars.jpg")
+    #     self.add_body(body)
+
+    # def __add_jupiter(self):
+    #     body = SphereBody(name = "Jupiter", position = np.array([7.7857 * math.pow(10, 11) , 0, 0]), velocity = np.array([0, 5, 0]), mass = 1.9 * math.pow(10, 27), radius = 2, color = "images/jupiter.jpg")
+    #     self.add_body(body)
+
+    # def __add_neptune(self):
+    #     body = SphereBody(name = "Neptune", position = np.array([4.49506 * math.pow(10, 12), 0, 0]), velocity = np.array([0, 5, 0]), mass = math.pow(10, 26), radius = 2, color = "images/neptune.jpg")
+    #     self.add_body(body)
 
     def __add_sun(self):
         body = SphereBody(name = "Sun", position = np.array([50.0, 0, 0]), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
@@ -158,5 +184,5 @@ class BodySystem:
         self.add_body(body)
 
     def __add_mars(self):
-        body = SphereBody(name = "Mars", position = np.array([150.0, 0, 0]), velocity = np.array([0, 5, 0]), mass = 10, radius = 1, color = "images/mars.jpg")
+        body = SphereBody(name = "Mars", position = np.array([150.0, 0, 0]), velocity = np.array([0, 0, 5]), mass = 10, radius = 1, color = "images/mars.jpg")
         self.add_body(body)

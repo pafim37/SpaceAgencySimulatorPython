@@ -149,12 +149,16 @@ class TkForm:
                 tk.Label(body_frame, text=f"Eccentricity: {round(orbit.eccentricity, 4)}").grid(row = 4, column = 1, sticky=tk.W)
                 tk.Label(body_frame, text=f"True anomaly: {round(math.degrees(orbit.true_anomaly))}").grid(row = 5, column = 1, sticky=tk.W)
             
-            tk.Button(body_frame, text=f"Remove {body.name}", command=lambda id=body.name: self.remove_body(id)).grid(row = 6, column = 0, columnspan=2)
+            tk.Button(body_frame, text=f"Remove {body.name}", command=lambda id=body.name: self.remove_body(id)).grid(row = 6, column = 0)
+            tk.Button(body_frame, text=f"Focus on {body.name}", command=lambda id=body.name: self.focus_on_body(id)).grid(row = 6, column = 1)
             body_frame.grid(row = row, column = 0, padx = 10, pady = 10, sticky=tk.W)
             row += 1
     
     def remove_body(self, name):
         self.send_command_with_data(Command.REMOVE_BODY, data = name)
+
+    def focus_on_body(self, name):
+        self.send_command_with_data(Command.FOCUS_ON, data = name)
 
     def __calibrate_barycentrum_to_zero(self):
         self.send_command_with_data(Command.CALIBRATE_BARYCENTRUM_TO_ZERO, self.barycentrum_enabled_var.get())
