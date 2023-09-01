@@ -84,6 +84,8 @@ class UrsForm:
             self.__bodies_entities.append(entity)
             entities = body.local_coordinate_system.get_entities()
             self.__bodies_coordinate_system_entities.extend(entities)
+            for e in entities:
+                e.parent = self.group
         self.configure_coordinate_axes()
 
     def __synchronize_orbits(self, orbits):
@@ -197,6 +199,8 @@ class UrsForm:
             e.position -= d_position
         for o in self.__orbits_entities:
             o.position -= d_position
+        for s in self.__bodies_coordinate_system_entities:
+            s.position -= d_position
 
 if __name__=="__main__":
     app = UrsForm()
