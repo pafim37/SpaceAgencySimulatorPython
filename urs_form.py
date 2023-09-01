@@ -18,6 +18,7 @@ class UrsForm:
         self.__bodies_entities = []
         self.__bodies_coordinate_system_entities = []
         self.__orbits_entities = []
+        self.group = urs.Entity()
 
     def __setup_camera(self):
         self.camera.position = (5, 5, -5)
@@ -33,6 +34,8 @@ class UrsForm:
     def update(self):
         self.__handle_keys()
         self.update_compass()
+        self.group.rotation_z += urs.mouse.velocity[1] * urs.mouse.left * 150
+        self.group.rotation_y -= urs.mouse.velocity[0] * urs.mouse.right * 150
         self.root.step()
 
     def __setup_compass(self):
@@ -112,7 +115,7 @@ class UrsForm:
             self.__orbits_entities.append(orbit_entity)
 
     def __convert_body_to_entity(self, body):
-        body_entity = urs.Entity(model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
+        body_entity = urs.Entity(parent=self.group, model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
         if isinstance(body.texture, str):
             body_entity.texture = body.texture
         else:
@@ -120,7 +123,7 @@ class UrsForm:
         return body_entity
 
     def __convert_orbit_to_entity(self, orbit):
-        return urs.Entity(model = urs.Mesh(vertices = orbit.points, mode='line'), name = f"{orbit.name}_orbit_entity", color = urs.color.blue)
+        return urs.Entity(parent=self.group, model = urs.Mesh(vertices = orbit.points, mode='line'), name = f"{orbit.name}_orbit_entity", color = urs.color.blue)
 
     def __handle_keys(self):
         if urs.held_keys['c']:
@@ -189,8 +192,11 @@ class UrsForm:
     def set_position_camera(self, entity_name):
         entity = next((e for e in self.__bodies_entities if entity_name in e.name), None)
         position = entity.position
-        self.camera.position = (position[0], position[1], position[2] - 10)
-        self.camera.rotation = (0, 0, 0)
+        d_position = entity.position
+        for e in self.__bodies_entities:
+            e.position -= d_position
+        for o in self.__orbits_entities:
+            o.position -= d_position
 
 if __name__=="__main__":
     app = UrsForm()
