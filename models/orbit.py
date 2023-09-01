@@ -94,7 +94,7 @@ class Orbit:
                 rotated_points.append(rotated_point)
 
         # find orbit direction and rotate it
-        orbit_vector = self.__center_body.position / 100 + rotated_points[peri_point_index]
+        orbit_vector = rotated_points[peri_point_index]
         rotation_axis = np.cross(orbit_vector, self.__position)
         angle = math.acos(np.dot(self.__normalize(orbit_vector), self.__normalize(self.__position)))
         output_points = []
