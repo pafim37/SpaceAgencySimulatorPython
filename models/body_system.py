@@ -176,13 +176,13 @@ class BodySystem:
         self.add_body(body)
 
     def __add_earth(self):
-        body = SphereBody(name = "Earth", position = np.array([100.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/earth.jpg")
+        body = SphereBody(name = "Earth", position = np.array([100.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 100, radius = 1, color = "images/earth.jpg")
         self.add_body(body)
 
     def __add_moon(self):
-        body = SphereBody(name = "Moon", position = np.array([100.0, 50, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 1, color = "images/moon.jpg")
+        body = SphereBody(name = "Moon", position = np.array([100.0, 10, 0]), velocity = np.array([0, 17, 3]), mass = 1, radius = 0.2, color = "images/moon.jpg")
         self.add_body(body)
 
     def __add_mars(self):
-        body = SphereBody(name = "Mars", position = np.array([150.0, 0, 0]), velocity = np.array([0, 0, 5]), mass = 10, radius = 1, color = "images/mars.jpg")
+        body = SphereBody(name = "Mars", position = np.array([-150.0, 0, 0]), velocity = np.array([0, 0, 5]), mass = 10, radius = 1, color = "images/mars.jpg")
         self.add_body(body)
