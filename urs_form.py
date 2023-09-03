@@ -16,6 +16,7 @@ class UrsForm:
         self.__setup_compass()
         self.__setup_coordinate_axes()
         self.__bodies_entities = []
+        self.__velocities_entities = []
         self.__bodies_coordinate_system_entities = []
         self.__orbits_entities = []
         self.group = urs.Entity()
@@ -77,11 +78,16 @@ class UrsForm:
             urs.destroy(body_entity)
         for body_coordinate_system_entity in self.__bodies_coordinate_system_entities:
             urs.destroy(body_coordinate_system_entity)
+        for velocity_entity in self.__velocities_entities:
+            urs.destroy(velocity_entity) 
         self.__bodies_entities = []
         self.__bodies_coordinate_system_entities = []
+        self.__velocities_entities = []
         for body in bodies:
             entity = self.__convert_body_to_entity(body)
             self.__bodies_entities.append(entity)
+            velocity_entity = self.__convert_body_velocity_to_entity(body)
+            self.__velocities_entities.append(velocity_entity)
             entities = body.local_coordinate_system.get_entities()
             self.__bodies_coordinate_system_entities.extend(entities)
             for e in entities:
@@ -103,6 +109,11 @@ class UrsForm:
                 self.__bodies_entities.remove(body_entity)
                 urs.destroy(body_entity)
                 break
+        for velocity_entity in self.__velocity_entities:
+            if body.name in velocity_entity.name:
+                self.__velocity_entities.remove(velocity_entity)
+                urs.destroy(velocity_entity)
+                break
         for orbit_entity in self.__orbits_entities:
             if body.name in orbit_entity.name:
                 self.__orbits_entities.remove(orbit_entity)
@@ -111,6 +122,8 @@ class UrsForm:
                 
         body_entity = self.__convert_body_to_entity(body)
         self.__bodies_entities.append(body_entity)
+        velocity_entity = self.__convert_body_velocity_to_entity(body)
+        self.__velocities_entities.append(velocity_entity)
         if orbit is not None:
             orbit_entity = self.__convert_orbit_to_entity(orbit)
             orbit_entity.enabled = self.config.show_orbits
@@ -123,6 +136,16 @@ class UrsForm:
         else:
             body_entity.color = body.color
         return body_entity
+
+    def __convert_body_velocity_to_entity(self, body):
+        velocity_vector_entity = urs.Entity(parent=self.group, model="arrow", name = f"{body.name}_velocity_entity", position = body.position / 100, scale = (3 * body.radius / 10, 0.1, 0.1), color = urs.color.white)
+        vector_start = (1, 0, 0)
+        vector_end = body.velocity
+        d = np.dot(vector_start, vector_end)
+        w = np.cross(vector_start, vector_end)
+        q = urs.Quat(d + math.sqrt(d*d + np.dot(w, w)), w[0], w[1], w[2])
+        velocity_vector_entity.quaternion = q / np.linalg.norm(q)
+        return velocity_vector_entity
 
     def __convert_orbit_to_entity(self, orbit):
         return urs.Entity(parent=self.group, model = urs.Mesh(vertices = orbit.points, mode='line'), name = f"{orbit.name}_orbit_entity", color = urs.color.blue)
@@ -197,6 +220,8 @@ class UrsForm:
         d_position = entity.position
         for e in self.__bodies_entities:
             e.position -= d_position
+        for v in self.__velocities_entities:
+            v.position -= d_position
         for o in self.__orbits_entities:
             o.position -= d_position
         for s in self.__bodies_coordinate_system_entities:
