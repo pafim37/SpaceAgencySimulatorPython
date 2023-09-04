@@ -5,7 +5,6 @@ from models.orbits.orbit import Orbit
 import numpy as np
 import sys
 import logging
-from exceptions.body_already_exists_exception import BodyAlreadyExistsException
 from ursina import color
 
 class BodySystem:
