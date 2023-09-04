@@ -4,6 +4,13 @@ import math
 
 class EntityConverter:
     @staticmethod
+    def from_compass():
+        arrow_x = urs.Entity(model="arrow", scale=(0.5,0.5,0.5), position=(3,1.5,0), color=urs.color.blue)
+        arrow_y = urs.Entity(model="arrow", scale=(0.5,0.5,0.5), position=(3,1.5,0), rotation=(0, 0, -90), color=urs.color.green)
+        arrow_z = urs.Entity(model="arrow", scale=(0.5,0.5,0.5), position=(3,1.5,0), rotation=(0, -90, 0), color=urs.color.red)
+        return [arrow_x, arrow_y, arrow_z]
+
+    @staticmethod
     def from_body(body, parent):
         body_entity = urs.Entity(parent=parent, model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
         color = EntityConverter.__get_body_color(body.name)

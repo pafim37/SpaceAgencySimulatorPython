@@ -6,20 +6,11 @@ class Compass():
     def __init__(self):
         self.enabled = True
 
-    def get_entities(self):
-        arrow_x = Entity(model="arrow", scale=(0.5,0.5,0.5), position=(3,1.5,0), color=color.blue)
-        arrow_y = Entity(model="arrow", scale=(0.5,0.5,0.5), position=(3,1.5,0), rotation=(0, 0, -90), color=color.green)
-        arrow_z = Entity(model="arrow", scale=(0.5,0.5,0.5), position=(3,1.5,0), rotation=(0, -90, 0), color=color.red)
-        return [arrow_x, arrow_y, arrow_z]
-
-    def update(self, arrows, camera):
+    def update(self, camera):
         x = math.radians(camera.rotation[0])
         y = math.radians(camera.rotation[1])
         z = math.radians(camera.rotation[2])
-        for arrow in arrows:
-            arrow.position = self.__rotation_matrix_y(y) @ self.__rotation_matrix_x(x) @ self.__rotation_matrix_z(z) @ (3,1.5,10) + camera.position
-            arrow.position = self.__rotation_matrix_y(y) @ self.__rotation_matrix_x(x) @ self.__rotation_matrix_z(z) @ (3,1.5,10) + camera.position
-            arrow.position = self.__rotation_matrix_y(y) @ self.__rotation_matrix_x(x) @ self.__rotation_matrix_z(z) @ (3,1.5,10) + camera.position
+        return self.__rotation_matrix_y(y) @ self.__rotation_matrix_x(x) @ self.__rotation_matrix_z(z) @ (3,1.5,10) + camera.position
     
     def __rotation_matrix_z(self, yaw):
         cos = np.cos(yaw)

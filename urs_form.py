@@ -43,7 +43,7 @@ class UrsForm:
 
     def __setup_compass(self):
         self.compass = Compass()
-        self.compass_entities = self.compass.get_entities()
+        self.compass_entities = EntityConverter.from_compass()
 
     def __setup_coordinate_axes(self):
         # TODO: fix bug with "UPDATE" body
@@ -52,9 +52,12 @@ class UrsForm:
 
     def update_compass(self):
         if self.compass.enabled:
-            self.compass.update(self.compass_entities, self.camera)
+            new_arrow_position = self.compass.update(self.camera)
+            for arrow in self.compass_entities:
+                arrow.position = new_arrow_position
 
     def configure_compass(self, enabled):
+        self.compass.enabled = enabled
         for entity in self.compass_entities:
             entity.enabled = enabled
     
@@ -65,12 +68,12 @@ class UrsForm:
             entity.enabled = self.config.show_coordinate_axes
 
     def configure_orbits(self, enabled):
-        for entity in self.__orbits_entities:
-            entity.enabled = enabled
+        for orbit_entity in self.__orbits_entities:
+            orbit_entity.enabled = enabled
 
     def configure_velocities(self, enabled):
-        for entity in self.__velocities_entities:
-            entity.enabled = enabled
+        for velocity_entity in self.__velocities_entities:
+            velocity_entity.enabled = enabled
 
     def register_mediator(self, mediator):
         self.mediator = mediator
