@@ -1,10 +1,4 @@
 class Config:
-    def __init__(self):
-        self.show_coordinate_axes = False
-        self.show_compass = False 
-        self.show_orbits = False
-        self.show_velocities = False
-
     def register_mediator(self, mediator):
         self.mediator = mediator
         mediator.register_config(self)

@@ -67,17 +67,6 @@ class Orbit:
         else:
             raise Exception(f"Cannot determine the shape of the orbit for e = {e}")
 
-    def __str__(self):
-        return f"==== \
-        \nOrbit Name: {self.name}, \
-        \nshape: {self.__shape}, \
-        \na: {self.__a}, \
-        \nb: {self.__b}, \
-        \ne: {self.__e}, \
-        \nphi: {math.degrees(self.__phi)}, \
-        \nnormal_axis: {self.__normalVector}, \
-        \n====\n"
-
     def __calculate_points(self):
         # create basic plane orbit points
         points, peri_point_index = self.__get_points_and_peri_point_index()

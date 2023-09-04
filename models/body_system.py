@@ -16,34 +16,23 @@ class BodySystem:
         self.__G = G
         self.__barycentrum_name = "Barycentrum"
         self.barycentrum = None
+        self.shuttle = None
         self.calibrate_barycentrum = False
         self.__add_planets()
 
-    def add_body(self, body):
-        if any(b.name == body.name for b in self.__bodies):
-            raise BodyAlreadyExistsException(body)
-        else:
-            self.__bodies.append(body)
+    def add_or_update_body(self, body):
+        for b in self.__bodies:
+            if body.name == b.name:
+                b.update(body)
+                return
+        self.add_body(body)
 
-    def add_body_from_dict(self, dict):
-        logging.debug(f"Creating body from dict {dict}")
-        body_name = str(dict["body_name"])
-        body = self.get_body_by_name(body_name)
-        if body is not None:
-            # update
-            body.position = np.array(dict["body_position"])
-            body.velocity = np.array(dict["body_velocity"])
-            body.mass = float(dict["body_mass"]) if "body_mass" in dict else body.mass
-            body.radius = float(dict["body_radius"]) if "body_radius" in dict else body.radius
-        else:
-            # add
-            body_position = np.array(dict["body_position"])
-            body_velocity = np.array(dict["body_velocity"])
-            body_mass = float(dict["body_mass"])if "body_mass" in dict else 1
-            body_radius = float(dict["body_radius"]) if "body_radius" in dict else 1
-            body_color = self.__get_body_color(body_name)
-            body = SphereBody(name = body_name, position = body_position, velocity = body_velocity, mass = body_mass, radius = body_radius, color = body_color)
-            self.add_body(body)
+    def register_mediator(self, mediator):
+        self.mediator = mediator
+        mediator.register_body_system(self)
+    
+    def add_body(self, body):
+        self.__bodies.append(body)
 
     def remove_body(self, body):
         self.__bodies.remove(body)
@@ -61,10 +50,6 @@ class BodySystem:
 
     def get_orbits(self):
         return self.__orbits
-
-    def register_mediator(self, mediator):
-        self.mediator = mediator
-        mediator.register_body_system(self)
 
     def update(self):
         self.__bodies.sort(key=lambda x: x.mass)
@@ -115,29 +100,7 @@ class BodySystem:
                 self.__orbits.append(orbit)
         self.__bodies[-1].center_body_name = self.barycentrum.name
 
-    def __get_body_color(self, body_name):
-        if body_name == "Earth":
-            return "images/earth.jpg"
-        elif body_name == "Jupiter":
-            return "images/jupiter.jpg"
-        elif body_name == "Mars":
-            return "images/mars.jpg"
-        elif body_name == "Neptune":
-            return "images/neptune.jpg"
-        elif body_name == "Saturn":
-            return "images/saturn.jpg"
-        elif body_name == "Sun":
-            return "images/sun.jpg"
-        elif body_name == "Uranus":
-            return "images/uranus.jpg"
-        elif body_name == "Venus":
-            return "images/venus.jpg"
-        elif body_name == "Mercury":
-            return "images/mercury.jpg"
-        elif body_name == "Moon":
-            return "images/moon.jpg"
-        else:
-            return color.red
+
 
     def __add_planets(self):
         self.__add_sun()
@@ -172,17 +135,17 @@ class BodySystem:
     #     self.add_body(body)
 
     def __add_sun(self):
-        body = SphereBody(name = "Sun", position = np.array([50.0, 0, 0]), velocity = np.zeros(3), mass = 10000, radius = 2, color = "images/sun.jpg")
+        body = SphereBody(name = "Sun", position = np.array([50.0, 0, 0]), velocity = np.zeros(3), mass = 10000, radius = 2)
         self.add_body(body)
 
     def __add_earth(self):
-        body = SphereBody(name = "Earth", position = np.array([100.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 100, radius = 1, color = "images/earth.jpg")
+        body = SphereBody(name = "Earth", position = np.array([100.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 100, radius = 1)
         self.add_body(body)
 
     def __add_moon(self):
-        body = SphereBody(name = "Moon", position = np.array([100.0, 10, 0]), velocity = np.array([0, 17, 3]), mass = 1, radius = 0.2, color = "images/moon.jpg")
+        body = SphereBody(name = "Moon", position = np.array([100.0, 10, 0]), velocity = np.array([0, 17, 3]), mass = 1, radius = 0.2)
         self.add_body(body)
 
     def __add_mars(self):
-        body = SphereBody(name = "Mars", position = np.array([-150.0, 0, 0]), velocity = np.array([0, 0, 5]), mass = 10, radius = 1, color = "images/mars.jpg")
+        body = SphereBody(name = "Mars", position = np.array([-150.0, 0, 0]), velocity = np.array([0, 0, 5]), mass = 10, radius = 1)
         self.add_body(body)

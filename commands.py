@@ -8,4 +8,4 @@ class Command(Enum):
     SET_POSITION_OZ_CAMERA = "SET_POSITION_OZ_CAMERA"
     SET_CONFIGURATION = "SET_CONFIGURATION"
     CALIBRATE_BARYCENTRUM_TO_ZERO = "CALIBRATE_BARYCENTRUM_TO_ZERO"     # set center of the body system (barycentrum) to zero (origin of the global reference system) 
-    FOCUS_ON = "FOCUS_ON"
+    FOCUS_ON_BODY = "FOCUS_ON_BODY"

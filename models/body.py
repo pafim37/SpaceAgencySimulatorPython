@@ -4,14 +4,12 @@ from ursina import *
 from models.coordinate_axes import CoordinateAxes 
 
 class Body:
-    def __init__(self, name, position, velocity, mass = 1, color = color.red):
+    def __init__(self, name, position, velocity, mass = 1):
         self.name = name
         self.position = position
         self.velocity = velocity
         self.mass = mass
         self.center_body_name = "" # TODO: change that
-        self.texture = color
-        self.color = color
         self.local_coordinate_system = CoordinateAxes(name, position)
 
     def get_relative_position_to(self, body):
@@ -26,5 +24,22 @@ class Body:
         mass_ratio = math.pow(self.mass / body.mass, 0.4)
         return distance * mass_ratio
 
-    def __str__(self):
-        return f"{self.name}: pos: {self.position}, vel: {self.velocity}, mass: {self.mass}, radius: {self.radius}, center_body_name: {self.center_body_name}\n"
+    def update(self, body):
+        # TODO: update local_coordinate_system
+        self.update_position(body.position)
+        self.update_velocity(body.velocity)
+        self.update_mass(body.mass)
+
+    def update_position(self, position):
+        self.position = position
+    
+    def update_velocity(self, velocity):
+        self.velocity = velocity
+
+    def update_mass(self, mass):
+        self.mass = mass
+
+    def update_center_body_name(self, name):
+        self.center_body_name = name
+
+    

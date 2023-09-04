@@ -161,7 +161,7 @@ class TkForm:
         self.send_command_with_data(Command.REMOVE_BODY, data = name)
 
     def focus_on_body(self, name):
-        self.send_command_with_data(Command.FOCUS_ON, data = name)
+        self.send_command_with_data(Command.FOCUS_ON_BODY, data = name)
 
     def __calibrate_barycentrum_to_zero(self):
         self.send_command_with_data(Command.CALIBRATE_BARYCENTRUM_TO_ZERO, self.barycentrum_enabled_var.get())

@@ -3,6 +3,7 @@ from models.body import Body
 import logging
 import numpy as np
 from ursina import *
+from converters.body_converter import BodyConverter
 
 class Mediator:
     def __init__(self):
@@ -26,7 +27,9 @@ class Mediator:
         match command:
             case Command.CREATE_OR_UPDATE_BODY:
                 self.log.info(f"Starting handle {command}")
-                self.body_system.add_body_from_dict(data)
+                # TODO: add logs here Debug
+                body = BodyConverter.from_dictionary(data)
+                self.body_system.add_or_update_body(body)
                 self.__update_body_system_on_backend_and_frontend()
                 self.log.info(f"End handle {command}")
                 return
@@ -71,7 +74,7 @@ class Mediator:
             case Command.UPDATE:
                 self.__update_body_system_on_backend_and_frontend()
                 return
-            case Command.FOCUS_ON:
+            case Command.FOCUS_ON_BODY:
                 self.__update_body_system_on_backend_and_frontend()
                 self.urs_form.set_position_camera(data)
                 return
