@@ -1,5 +1,5 @@
 import tkinter as tk
-from commands import *
+from mediator.commands import *
 import math
 
 class TkForm:

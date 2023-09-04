@@ -1,4 +1,4 @@
-from models.orbit import Orbit
+from models.orbits.orbit import Orbit
 import numpy as np
 import math
 from ursina import *
@@ -9,11 +9,11 @@ from models.compass import Compass
 from models.config import Config
 import time
 import quaternion
-from tk_form import TkForm
-from mediator import Mediator
+from forms.tk_form import TkForm
+from mediator.mediator import Mediator
 import logging
-from urs_form import UrsForm
-from commands import *
+from forms.urs_form import UrsForm
+from mediator.commands import *
 
 logging.basicConfig(
     level=logging.DEBUG,

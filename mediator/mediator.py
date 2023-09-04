@@ -1,4 +1,4 @@
-from commands import *
+from mediator.commands import *
 from models.bodies.body import Body
 import logging
 import numpy as np

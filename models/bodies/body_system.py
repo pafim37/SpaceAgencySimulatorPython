@@ -1,7 +1,7 @@
 import math
 from models.bodies.body import Body
 from models.bodies.sphere_body import SphereBody
-from models.orbit import Orbit
+from models.orbits.orbit import Orbit
 import numpy as np
 import sys
 import logging
