@@ -1,5 +1,5 @@
 import numpy as np
-from models.sphere_body import SphereBody
+from models.bodies.sphere_body import SphereBody
 
 class BodyConverter:
     @staticmethod

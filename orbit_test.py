@@ -1,7 +1,7 @@
 import unittest
 from models.orbit import Orbit
 from models.body import Body
-from models.body_system import BodySystem
+from models.bodies.body_system import BodySystem
 import numpy as np
 import math
 

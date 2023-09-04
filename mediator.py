@@ -1,5 +1,5 @@
 from commands import *
-from models.body import Body
+from models.bodies.body import Body
 import logging
 import numpy as np
 from ursina import *

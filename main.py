@@ -2,8 +2,8 @@ from models.orbit import Orbit
 import numpy as np
 import math
 from ursina import *
-from models.body_system import BodySystem
-from models.body import Body
+from models.bodies.body_system import BodySystem
+from models.bodies.body import Body
 from models.reference_system import ReferenceSystem
 from models.compass import Compass
 from models.config import Config

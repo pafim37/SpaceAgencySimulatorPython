@@ -1,6 +1,6 @@
 import math
-from models.body import Body
-from models.sphere_body import SphereBody
+from models.bodies.body import Body
+from models.bodies.sphere_body import SphereBody
 from models.orbit import Orbit
 import numpy as np
 import sys

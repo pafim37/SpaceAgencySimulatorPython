@@ -1,5 +1,4 @@
-from ursina import color
-from models.body import Body
+from models.bodies.body import Body
 
 class SphereBody(Body):
     def __init__(self, name, position, velocity, mass = 1, radius = 1):
