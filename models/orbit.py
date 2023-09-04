@@ -53,10 +53,7 @@ class Orbit:
 
     def __calculate_true_anomaly(self, position, r, velocity, eVector, e):
         dotProduct = np.dot(eVector, position) 
-        if dotProduct >= 0:
-            return math.acos(dotProduct / (e * r))
-        else:
-            return 2 * math.pi - math.acos(np.dot(eVector,position) / (e * r))
+        return math.acos(np.dot(eVector,position) / (e * r))
     
     def __assign_shape(self, e):
         if e == 0:
