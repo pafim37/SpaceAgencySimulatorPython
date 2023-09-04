@@ -20,11 +20,13 @@ class UrsForm:
         self.__bodies_coordinate_system_entities = []
         self.__orbits_entities = []
         self.group = urs.Entity()
+        self.player = urs.Entity(parent=self.group, model="images\shuttle.obj", texture="shuttle.png", position = (0, 0, 0), velocity = (0, 0, 0), scale = 0.0001 )
+        self.player_velocity = (0, 0, 0)
 
     def __setup_camera(self):
         self.camera.position = (5, 5, -5)
         self.camera.rotation = (35, -45, 0)
-
+ 
     def __setup_window(self):
         urs.window.title = 'Space Agency Simulator'
         urs.window.borderless = False           
