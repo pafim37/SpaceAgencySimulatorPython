@@ -44,6 +44,7 @@ class UrsForm:
         self.compass_entities = self.compass.get_entities()
 
     def __setup_coordinate_axes(self):
+        # TODO: fix bug with "UPDATE" body
         self.coordinate_axes = CoordinateAxes("Global Origin", np.array([0, 0, 0]), scale=1)
         self.coordinate_axes_entities = self.coordinate_axes.get_entities()
 
@@ -63,6 +64,10 @@ class UrsForm:
 
     def configure_orbits(self, enabled):
         for entity in self.__orbits_entities:
+            entity.enabled = enabled
+
+    def configure_velocities(self, enabled):
+        for entity in self.__velocities_entities:
             entity.enabled = enabled
 
     def register_mediator(self, mediator):
@@ -123,7 +128,8 @@ class UrsForm:
         body_entity = self.__convert_body_to_entity(body)
         self.__bodies_entities.append(body_entity)
         velocity_entity = self.__convert_body_velocity_to_entity(body)
-        self.__velocities_entities.append(velocity_entity)
+        if velocity_entity is not None:
+            self.__velocities_entities.append(velocity_entity)
         if orbit is not None:
             orbit_entity = self.__convert_orbit_to_entity(orbit)
             orbit_entity.enabled = self.config.show_orbits
@@ -138,6 +144,8 @@ class UrsForm:
         return body_entity
 
     def __convert_body_velocity_to_entity(self, body):
+        if not np.any(body.velocity):
+            return None
         velocity_vector_entity = urs.Entity(parent=self.group, model="arrow", name = f"{body.name}_velocity_entity", position = body.position / 100, scale = (3 * body.radius / 10, 0.1, 0.1), color = urs.color.white)
         vector_start = (1, 0, 0)
         vector_end = body.velocity
@@ -145,6 +153,7 @@ class UrsForm:
         w = np.cross(vector_start, vector_end)
         q = urs.Quat(d + math.sqrt(d*d + np.dot(w, w)), w[0], w[1], w[2])
         velocity_vector_entity.quaternion = q / np.linalg.norm(q)
+        velocity_vector_entity.enabled = self.config.show_velocities
         return velocity_vector_entity
 
     def __convert_orbit_to_entity(self, orbit):
@@ -197,6 +206,7 @@ class UrsForm:
         self.configure_compass(config.show_compass)
         self.configure_coordinate_axes()
         self.configure_orbits(config.show_orbits)
+        self.configure_velocities(config.show_velocities)
 
     def go_home_camera(self):
         self.camera.position = (5, 5, -5)

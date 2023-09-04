@@ -40,6 +40,7 @@ class TkForm:
         self.coordinate_axes_enabled_var  = tk.BooleanVar(self.root, False)
         self.compass_enabled_var = tk.BooleanVar(self.root, False)
         self.orbits_enabled_var = tk.BooleanVar(self.root, False)
+        self.velocity_enabled_var = tk.BooleanVar(self.root, False)
         self.barycentrum_enabled_var = tk.BooleanVar(self.root, False)
 
     def __setup_frames(self):
@@ -87,6 +88,7 @@ class TkForm:
         tk.Checkbutton(configuration_lf, variable = self.compass_enabled_var, onvalue = True, offvalue = False, text = "Show compass", command = self.send_configuration).grid(row = 1, column = 0, sticky="W", padx = 10)
         tk.Checkbutton(configuration_lf, variable = self.orbits_enabled_var, onvalue = True, offvalue = False, text = "Show orbits", command = self.send_configuration).grid(row = 2, column = 0, sticky="W", padx = 10)
         tk.Checkbutton(configuration_lf, variable = self.barycentrum_enabled_var, onvalue = True, offvalue = False, text = "Calibrate barycentrum to zero", command = self.__calibrate_barycentrum_to_zero).grid(row = 3, column = 0, sticky="W", padx = 10)
+        tk.Checkbutton(configuration_lf, variable = self.velocity_enabled_var, onvalue = True, offvalue = False, text = "Show velocities", command = self.send_configuration).grid(row = 4, column = 0, sticky="W", padx = 10)
         return configuration_lf
 
     def __setup_camera_frame(self):
@@ -122,6 +124,7 @@ class TkForm:
             "show_coordinate_axes": self.coordinate_axes_enabled_var.get(),
             "show_compass": self.compass_enabled_var.get(),
             "show_orbits": self.orbits_enabled_var.get(),
+            "show_velocities": self.velocity_enabled_var.get()
         }
         self.send_command_with_data(Command.SET_CONFIGURATION, data)
 
