@@ -48,7 +48,7 @@ class UrsForm:
     def __setup_coordinate_axes(self):
         # TODO: fix bug with "UPDATE" body
         self.coordinate_axes = CoordinateAxes("Global Origin", np.array([0, 0, 0]), scale=1)
-        self.coordinate_axes_entities = self.coordinate_axes.get_entities()
+        self.coordinate_axes_entities = EntityConverter.from_coordinate_axes(self.coordinate_axes)
 
     def update_compass(self):
         if self.compass.enabled:
@@ -100,7 +100,7 @@ class UrsForm:
             if velocity_entity is not None:
                 velocity_entity.enabled = self.config.show_velocities
                 self.__velocities_entities.append(velocity_entity)
-            entities = body.local_coordinate_system.get_entities()
+            entities = EntityConverter.from_coordinate_axes(body.local_coordinate_system)
             self.__bodies_coordinate_system_entities.extend(entities)
             for e in entities:
                 e.parent = self.group

@@ -11,6 +11,17 @@ class EntityConverter:
         return [arrow_x, arrow_y, arrow_z]
 
     @staticmethod
+    def from_coordinate_axes(coordinate_axes):
+        # TODO: consider scale
+        origin = coordinate_axes.origin
+        name = coordinate_axes.name
+        scale = np.array([10 * coordinate_axes.scale, 0.2, 0.2])
+        coordinate_system_axis_x = urs.Entity(model="arrow", name = name, scale=scale, position=origin / 100, color=urs.color.blue)
+        coordinate_system_axis_y = urs.Entity(model="arrow", name = name, scale=scale, position=origin / 100, rotation=(0,0,-90), color=urs.color.green)
+        coordinate_system_axis_z = urs.Entity(model="arrow", name = name, scale=scale, position=origin / 100, rotation=(0,-90,0), color=urs.color.red)
+        return [coordinate_system_axis_x, coordinate_system_axis_y, coordinate_system_axis_z]
+
+    @staticmethod
     def from_body(body, parent):
         body_entity = urs.Entity(parent=parent, model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
         color = EntityConverter.__get_body_color(body.name)
