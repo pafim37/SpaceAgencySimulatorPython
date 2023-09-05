@@ -22,6 +22,9 @@ class UrsForm:
         self.shuttle_rotation = urs.Entity(parent=self.group)
         self.player_entity = urs.Entity(parent=self.shuttle_rotation, model="images\shuttle.obj", texture="shuttle.png", position = (0, 0, 0), scale = 0.0001 )
         self.player_velocity = urs.Vec3(0, 0, 0)
+        self.angle_x = 0
+        self.angle_y = 0
+        self.angle_z = 0
 
     def __setup_camera(self):
         self.camera.position = (5, 5, -5)
@@ -38,12 +41,15 @@ class UrsForm:
         self.__handle_keys()
         self.update_player()
         self.update_compass()
-        self.group.rotation_z += urs.mouse.velocity[1] * urs.mouse.left * 150
-        self.group.rotation_y -= urs.mouse.velocity[0] * urs.mouse.right * 150
         self.root.step()
 
 
     def update_player(self):
+        self.shuttle_rotation.rotation_x += self.angle_x
+        self.shuttle_rotation.rotation_y += self.angle_y
+        self.shuttle_rotation.rotation_z += self.angle_z
+        self.player_entity.rotation = self.player_entity.world_rotation
+        self.shuttle_rotation.rotation = (0, 0, 0)
         self.player_entity.position += self.player_velocity
 
     def __setup_compass(self):
@@ -185,34 +191,31 @@ class UrsForm:
             self.camera.position += (0, 0, -0.1)
 
         if urs.held_keys['t']:
-            self.shuttle_rotation.rotation_x += 0.3
-            self.player_entity.rotation = self.player_entity.world_rotation
-            self.shuttle_rotation.rotation = (0, 0, 0)
+            self.angle_x += 0.1
 
         if urs.held_keys['y']:
-            self.shuttle_rotation.rotation_x -= 0.3
-            self.player_entity.rotation = self.player_entity.world_rotation
-            self.shuttle_rotation.rotation = (0, 0, 0)
+            self.angle_x -= 0.1
 
         if urs.held_keys['u']:
-            self.shuttle_rotation.rotation_y += 0.3
-            self.player_entity.rotation = self.player_entity.world_rotation
-            self.shuttle_rotation.rotation = (0, 0, 0)
+            self.angle_y += 0.1
 
         if urs.held_keys['i']:
-            self.shuttle_rotation.rotation_y -= 0.3
-            self.player_entity.rotation = self.player_entity.world_rotation
-            self.shuttle_rotation.rotation = (0, 0, 0)
+            self.angle_y -= 0.1
 
         if urs.held_keys['o']:
-            self.shuttle_rotation.rotation_z += 0.3
-            self.player_entity.rotation = self.player_entity.world_rotation
-            self.shuttle_rotation.rotation = (0, 0, 0)
+            self.angle_z += 0.1
 
         if urs.held_keys['p']:
-            self.shuttle_rotation.rotation_z -= 0.3
-            self.player_entity.rotation = self.player_entity.world_rotation
+            self.angle_z -= 0.1
+        if urs.held_keys['r']:
+            self.angle_x = 0
+            self.angle_y = 0
+            self.angle_z = 0
+            self.player_velocity = urs.Vec3(0, 0, 0)
             self.shuttle_rotation.rotation = (0, 0, 0)
+            self.shuttle_rotation.world_rotation = (0, 0, 0)
+            self.player_entity.rotation = (0, 0, 0)
+            self.player_entity.position = (0, 0, 0)
 
         if urs.held_keys['p']:
             print(self.camera.position)
