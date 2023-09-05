@@ -71,4 +71,4 @@ class EntityConverter:
         elif body_name == "Moon":
             return "images/moon.jpg"
         else:
-            return color.red
+            return urs.color.red

@@ -5,7 +5,6 @@ import numpy as np
 from models.coordinate_axes import CoordinateAxes
 from models.compass import Compass
 from converters.entity_converter import EntityConverter
-
 class UrsForm:
     def __init__(self):
         self.root = urs.Ursina()
@@ -20,8 +19,9 @@ class UrsForm:
         self.__bodies_coordinate_system_entities = []
         self.__orbits_entities = []
         self.group = urs.Entity()
-        self.player = urs.Entity(parent=self.group, model="images\shuttle.obj", texture="shuttle.png", position = (0, 0, 0), velocity = (0, 0, 0), scale = 0.0001 )
-        self.player_velocity = (0, 0, 0)
+        self.shuttle_rotation = urs.Entity(parent=self.group)
+        self.player_entity = urs.Entity(parent=self.shuttle_rotation, model="images\shuttle.obj", texture="shuttle.png", position = (0, 0, 0), scale = 0.0001 )
+        self.player_velocity = urs.Vec3(0, 0, 0)
 
     def __setup_camera(self):
         self.camera.position = (5, 5, -5)
@@ -36,10 +36,15 @@ class UrsForm:
 
     def update(self):
         self.__handle_keys()
+        self.update_player()
         self.update_compass()
         self.group.rotation_z += urs.mouse.velocity[1] * urs.mouse.left * 150
         self.group.rotation_y -= urs.mouse.velocity[0] * urs.mouse.right * 150
         self.root.step()
+
+
+    def update_player(self):
+        self.player_entity.position += self.player_velocity
 
     def __setup_compass(self):
         self.compass = Compass()
@@ -178,10 +183,48 @@ class UrsForm:
 
         if urs.held_keys['s']:
             self.camera.position += (0, 0, -0.1)
-            
+
+        if urs.held_keys['t']:
+            self.shuttle_rotation.rotation_x += 0.3
+            self.player_entity.rotation = self.player_entity.world_rotation
+            self.shuttle_rotation.rotation = (0, 0, 0)
+
+        if urs.held_keys['y']:
+            self.shuttle_rotation.rotation_x -= 0.3
+            self.player_entity.rotation = self.player_entity.world_rotation
+            self.shuttle_rotation.rotation = (0, 0, 0)
+
+        if urs.held_keys['u']:
+            self.shuttle_rotation.rotation_y += 0.3
+            self.player_entity.rotation = self.player_entity.world_rotation
+            self.shuttle_rotation.rotation = (0, 0, 0)
+
+        if urs.held_keys['i']:
+            self.shuttle_rotation.rotation_y -= 0.3
+            self.player_entity.rotation = self.player_entity.world_rotation
+            self.shuttle_rotation.rotation = (0, 0, 0)
+
+        if urs.held_keys['o']:
+            self.shuttle_rotation.rotation_z += 0.3
+            self.player_entity.rotation = self.player_entity.world_rotation
+            self.shuttle_rotation.rotation = (0, 0, 0)
+
+        if urs.held_keys['p']:
+            self.shuttle_rotation.rotation_z -= 0.3
+            self.player_entity.rotation = self.player_entity.world_rotation
+            self.shuttle_rotation.rotation = (0, 0, 0)
+
         if urs.held_keys['p']:
             print(self.camera.position)
             print(self.camera.rotation)
+
+        if not urs.held_keys["space"]:
+            self.key_pressed = False
+
+        if urs.held_keys['space'] and not self.key_pressed:
+            v = 0.001 * self.player_entity.right / np.linalg.norm(self.player_entity.right) 
+            self.player_velocity += v
+            self.key_pressed = True
 
     def set_configuration(self, config):
         # TODO: consider self.config when adding new orbit
