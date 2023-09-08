@@ -30,20 +30,23 @@ class App:
         self.config = Config()
         self.body_system = BodySystem(1) # TODO: configure G
 
-        mediator = Mediator()
-        self.tk_form.register_mediator(mediator)
-        self.urs_form.register_mediator(mediator)
-        self.body_system.register_mediator(mediator) 
-        self.config.register_mediator(mediator) 
+        self.mediator = Mediator()
+        self.tk_form.register_mediator(self.mediator)
+        self.urs_form.register_mediator(self.mediator)
+        self.body_system.register_mediator(self.mediator) 
+        self.config.register_mediator(self.mediator) 
 
         self.tk_form.send_configuration()
-        mediator.send(Command.UPDATE)
+        self.mediator.send(Command.UPDATE)
+        self.mediator.send(Command.SET_POSITION_OZ_CAMERA)
 
     def run(self):
         running = True
         while running:
             self.tk_form.update()
             self.urs_form.update()
+            self.mediator.send(Command.UPDATE, False)
+            
 
 if __name__ == '__main__':
     app = App()

@@ -53,7 +53,10 @@ class Orbit:
 
     def __calculate_true_anomaly(self, position, r, velocity, eVector, e):
         dotProduct = np.dot(eVector, position) 
-        return math.fabs(math.acos(np.dot(eVector,position) / (e * r)))
+        if dotProduct >= 0:
+            return math.acos(np.dot(eVector,position) / (e * r))    
+        else:
+            return 2 * math.pi - math.acos(np.dot(eVector,position) / (e * r))
     
     def __assign_shape(self, e):
         if e == 0:
@@ -70,7 +73,6 @@ class Orbit:
     def __calculate_points(self):
         # create basic plane orbit points
         points, peri_point_index = self.__get_points_and_peri_point_index()
-        
         # rotate basic orbit plane 
         rotation_axis = np.cross(np.array([0, 0, 1]), np.array(self.__normalVector))
         angle = math.acos(np.dot([0, 0, 1], self.__normalVector))
@@ -91,7 +93,7 @@ class Orbit:
 
         # move translate
         translated_points = []
-        for point in output_points:
+        for point in rotated_points: # warning: that's was changed
             x = point[0] + self.__center_body.position[0] / 100
             y = point[1] + self.__center_body.position[1] / 100
             z = point[2] + self.__center_body.position[2] / 100

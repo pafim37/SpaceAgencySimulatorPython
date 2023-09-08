@@ -39,8 +39,8 @@ class TkForm:
 
         self.coordinate_axes_enabled_var  = tk.BooleanVar(self.root, False)
         self.compass_enabled_var = tk.BooleanVar(self.root, False)
-        self.orbits_enabled_var = tk.BooleanVar(self.root, False)
-        self.velocity_enabled_var = tk.BooleanVar(self.root, False)
+        self.orbits_enabled_var = tk.BooleanVar(self.root, True)
+        self.velocity_enabled_var = tk.BooleanVar(self.root, True)
         self.barycentrum_enabled_var = tk.BooleanVar(self.root, False)
 
     def __setup_frames(self):

@@ -72,7 +72,10 @@ class Mediator:
                 self.log.info(f"End handle {command}")
                 return
             case Command.UPDATE:
-                self.__update_body_system_on_backend_and_frontend()
+                if data is not None:
+                    self.__update_body_system_on_backend_and_frontend(data)
+                else:
+                    self.__update_body_system_on_backend_and_frontend()
                 return
             case Command.FOCUS_ON_BODY:
                 self.__update_body_system_on_backend_and_frontend()
@@ -83,9 +86,10 @@ class Mediator:
                 return
         return
 
-    def __update_body_system_on_backend_and_frontend(self):
+    def __update_body_system_on_backend_and_frontend(self, update_tk = True):
         self.body_system.update()
         bodies = self.body_system.get_bodies()
         orbits = self.body_system.get_orbits()
-        self.tk_form.synchronize_bodies_and_orbits(bodies, orbits)
+        if update_tk:
+            self.tk_form.synchronize_bodies_and_orbits(bodies, orbits)
         self.urs_form.synchronize_bodies_and_orbits(bodies, orbits)

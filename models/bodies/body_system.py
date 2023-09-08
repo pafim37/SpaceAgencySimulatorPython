@@ -3,10 +3,11 @@ from models.bodies.body import Body
 from models.bodies.sphere_body import SphereBody
 from models.orbits.orbit import Orbit
 import numpy as np
+import time
 import sys
 import logging
 from ursina import color
-
+np.set_printoptions(suppress=True)
 class BodySystem:
     def __init__(self, G = 6.674301515 * math.pow(10, -11)):
         self.__bodies = []
@@ -18,6 +19,8 @@ class BodySystem:
         self.shuttle = None
         self.calibrate_barycentrum = False
         self.__add_planets()
+        self.t = 0
+        self.do_once = False
 
     def add_or_update_body(self, body):
         for b in self.__bodies:
@@ -54,10 +57,76 @@ class BodySystem:
         self.__bodies.sort(key=lambda x: x.mass)
         self.__update_u()
         self.__update_barycentrum()
-        if len(self.__bodies) > 1:
-            self.__find_orbits()
-        else:
-            self.__orbits = []
+        
+        if not self.do_once:
+            if len(self.__bodies) > 1:
+                self.__find_orbits()
+            else:
+                self.__orbits = []
+            self.do_once = True
+        # self.move_planets()
+
+    def move_planets2(self):
+        for body in self.__bodies:
+            dt = self.t
+            if body.center_body_name == self.__barycentrum_name:
+                continue
+
+            center_body = self.get_body_by_name(body.center_body_name)
+            relative_position = body.get_relative_position_to(center_body)
+            relative_velocity = body.get_relative_velocity_to(center_body)
+            r = np.linalg.norm(relative_position)
+            force = -self.__G * body.mass * center_body.mass * relative_position / r**3
+            a = force / body.mass
+
+            vel1_half = relative_velocity + 0.5 * dt * a
+    
+            pos = relative_position + dt * vel1_half
+    
+            a = -self.__G * center_body.mass * pos / np.linalg.norm(pos)**3
+            
+            vel1 = vel1_half + 0.5 * dt * a
+
+            body.position = pos
+            body.velocity = vel1
+            self.t += 0.00001
+
+    
+    def move_planets(self):
+        start = time.time()
+        for body in self.__bodies:
+            if body.center_body_name == self.__barycentrum_name:
+                continue
+            state = np.array([body.position[0], body.position[1], body.position[2], body.velocity[0], body.velocity[1], body.velocity[2]])
+            state += self.runge_kutta_4(state, body)
+            position = np.array([state[0], state[1], state[2]])
+            velocity = np.array([state[3], state[4], state[5]])
+            body.position = position
+            body.velocity = velocity
+
+    def runge_kutta_4(self, state, body):
+        t = self.t
+        h = 0.0001
+        k1 = self.two_body_problem(t + h, state, body)
+        k2 = self.two_body_problem(t + h/2, state + k1/2, body)
+        k3 = self.two_body_problem(t + h/2, state + k2/2, body)
+        k4 = self.two_body_problem(t + h, state + k3, body)
+        state = (k1 + 2*k2 + 2*k3 + k4) / 6
+        self.t += h
+        return state
+            
+    def two_body_problem(self, t, state, body):
+        position = np.array([state[0], state[1], state[2]])
+        velocity = np.array([state[3], state[4], state[5]])
+        center_body = self.get_body_by_name(body.center_body_name)
+        relative_position = body.get_relative_position_to(center_body)
+        relative_velocity = body.get_relative_velocity_to(center_body)
+        r = np.linalg.norm(relative_position)
+        force = -self.__G * body.mass * center_body.mass * relative_position / r**3
+        a = force / body.mass
+        new_position = velocity * t + 0.5 * a * t**2
+        new_velocity = a * t
+        return np.array([new_position[0], new_position[1], new_position[2], new_velocity[0], new_velocity[1], new_velocity[2]])
 
     def __update_u(self): 
         total_mass = sum(body.mass for body in self.__bodies)
@@ -104,8 +173,8 @@ class BodySystem:
     def __add_planets(self):
         self.__add_sun()
         self.__add_earth() 
-        self.__add_moon() 
-        self.__add_mars()
+        # self.__add_moon() 
+        # self.__add_mars()
         # self.__add_jupiter()
         # self.__add_neptune()
 
