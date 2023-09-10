@@ -29,8 +29,6 @@ class App:
         self.tk_form = TkForm()
         self.config = Config()
         self.body_system = BodySystem(1) # TODO: configure G
-        AddBodyHandler.add_planets(self.body_system)
-        AddBodyHandler.add_shuttle(self.body_system)
 
         self.mediator = Mediator()
         self.tk_form.register_mediator(self.mediator)
@@ -38,19 +36,31 @@ class App:
         self.body_system.register_mediator(self.mediator) 
         self.config.register_mediator(self.mediator) 
 
-        self.urs_form.assign_player()
 
         self.tk_form.send_configuration()
-        self.mediator.send(Command.UPDATE)
         self.mediator.send(Command.SET_POSITION_OZ_CAMERA)
+        self.__prepare_windows()
 
     def run(self):
         running = True
         while running:
-            self.tk_form.update()
-            self.urs_form.update()
             if self.config.movement:
-                self.mediator.send(Command.UPDATE, False)
+                self.body_system.move_bodies()
+                bodies = self.body_system.get_bodies()
+                self.tk_form.update_with_synchronize_bodies(bodies)
+                self.urs_form.update_with_synchronize_bodies(bodies)
+            else:
+                self.tk_form.update()
+                self.urs_form.update()
+
+    def __prepare_windows(self):
+        AddBodyHandler.add_planets(self.body_system)
+        AddBodyHandler.add_shuttle(self.body_system)
+        self.urs_form.assign_player()
+        self.body_system.update_orbit()
+        bodies = self.body_system.get_bodies()
+        self.tk_form.update_with_synchronize_bodies(bodies)
+        self.urs_form.update_with_synchronize_bodies(bodies)
             
 
 if __name__ == '__main__':

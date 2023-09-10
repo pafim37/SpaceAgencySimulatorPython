@@ -25,7 +25,6 @@ class Mediator:
         match command:
             case Command.THRUST_PLAYER:
                 self.body_system.thrust_shuttle(data)
-                self.__update_body_system_on_backend_and_frontend()
                 return
             case Command.GET_PLAYER:
                 return self.body_system.get_player()
@@ -34,13 +33,13 @@ class Mediator:
                 # TODO: add logs here Debug
                 body = BodyConverter.from_dictionary(data)
                 self.body_system.add_or_update_body(body)
-                self.__update_body_system_on_backend_and_frontend()
+                self.body_system.update_orbit()
                 self.log.info(f"End handle {command}")
                 return
             case Command.REMOVE_BODY:
                 self.log.info(f"Starting handle {command}")
                 self.body_system.remove_body_by_name(data)
-                self.__update_body_system_on_backend_and_frontend()
+                self.body_system.update_orbit()
                 self.log.info(f"End handle {command}")
                 return
             case Command.SET_HOME_CAMERA:
@@ -73,17 +72,10 @@ class Mediator:
             case Command.CALIBRATE_BARYCENTRUM_TO_ZERO:
                 self.log.info(f"Starting handle {command}")
                 self.body_system.calibrate_barycentrum = data
-                self.__update_body_system_on_backend_and_frontend()
+                self.body_system.update_orbit()
                 self.log.info(f"End handle {command}")
                 return
-            case Command.UPDATE:
-                if data is not None:
-                    self.__update_body_system_on_backend_and_frontend(data)
-                else:
-                    self.__update_body_system_on_backend_and_frontend()
-                return
             case Command.FOCUS_ON_BODY:
-                self.__update_body_system_on_backend_and_frontend()
                 self.urs_form.set_position_camera(data)
                 return
             case _:
@@ -91,9 +83,7 @@ class Mediator:
                 return
         return
 
-    def __update_body_system_on_backend_and_frontend(self, update_tk = True):
-        self.body_system.update()
+    def __update_body_system_on_backend_and_frontend(self):
         bodies = self.body_system.get_bodies()
-        if update_tk:
-            self.tk_form.synchronize_bodies(bodies)
+        self.tk_form.synchronize_bodies(bodies)
         self.urs_form.synchronize_bodies(bodies)

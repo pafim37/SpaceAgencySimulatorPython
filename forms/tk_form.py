@@ -23,6 +23,10 @@ class TkForm:
     def update(self):
         self.root.update()
 
+    def update_with_synchronize_bodies(self, bodies):
+        self.synchronize_bodies(bodies)
+        self.update()
+
     def __setup_root(self):
         self.root.title("Setup panel")
         self.root.geometry("720x700")
@@ -118,6 +122,7 @@ class TkForm:
     def __setup_body_info(self):
         body_info_lf = tk.LabelFrame(self.root, text="Body / Orbit info")
         body_frame = tk.Frame(body_info_lf)
+        body_frame.id="welcome"
         tk.Label(body_frame, text="Here will appear of your body info").grid(row = 0, column = 0, padx = 10, pady=5)
         body_frame.grid(row = 0, column = 0)
         return body_info_lf
@@ -133,30 +138,103 @@ class TkForm:
         self.send_command_with_data(Command.SET_CONFIGURATION, data)
 
     def synchronize_bodies(self, bodies):
-        for widget in self.body_info.winfo_children():
-            if isinstance(widget, tk.Frame):
-                widget.destroy()
+        # TODO: this should be refactored
+        if len(bodies) > 0:
+            for body_frame in self.body_info.winfo_children():
+                if body_frame.id=="welcome":
+                    body_frame.destroy()
+                    break
+
+        for body_frame in self.body_info.winfo_children():
+            found = False
+            for body in bodies:
+                if body_frame.id == body.name:
+                    found = True
+                    break
+            if not found:
+                body_frame.destroy()
+
+        for body in bodies:
+            found = False
+            for body_frame in self.body_info.winfo_children():
+                if body_frame.id!=body.name:
+                    continue
+                found = True
+                for w in body_frame.winfo_children():
+                    try:
+                        id = w.id
+                    except:
+                        continue
+                    if w.id =="position":
+                        w["text"] = f"Position: <{round(body.position[0])}, {round(body.position[1])}, {round(body.position[2])}>"
+                        continue
+                    if w.id =="velocity":
+                        w["text"] = f"Velocity: <{round(body.velocity[0])}, {round(body.velocity[1])}, {round(body.velocity[2])}>"
+                        continue
+                    if w.id =="mass":
+                        w["text"] = f"Mass: {round(body.mass)}"
+                        continue
+                    if w.id =="revolving":
+                        w["text"] = f"Revolving: {body.center_body_name}"
+                        continue
+                    if w.id =="shape":
+                        w["text"] = f"Shape: {body.orbit.shape}"
+                        continue
+                    if w.id =="a":
+                        w["text"] = f"Semi major axis: {round(body.orbit.semi_major_axis)}"
+                        continue
+                    if w.id =="b":
+                        w["text"] = f"Semi minor axis: {round(body.orbit.semi_minor_axis)}"
+                        continue
+                    if w.id =="e":
+                        w["text"] = f"Eccentricity: {round(body.orbit.eccentricity, 4)}"
+                        continue
+                    if w.id =="phi":
+                        w["text"] = f"True anomaly: {round(math.degrees(body.orbit.true_anomaly))}"
+                        continue
+                
+            if not found:
+                body_frame = tk.Frame(self.body_info)
+                body_frame.id = body.name
+                tk.Label(body_frame, text=f"Name: {body.name}").grid(row = 0, column = 0, sticky=tk.W)
+                l_position = tk.Label(body_frame, text=f"Position: <{round(body.position[0])}, {round(body.position[1])}, {round(body.position[2])}>")
+                l_position.id = "position"
+                l_position.grid(row = 1, column = 0, sticky=tk.W)
+                l_velocity = tk.Label(body_frame, text=f"Velocity: <{round(body.velocity[0])}, {round(body.velocity[1])}, {round(body.velocity[2])}>")
+                l_velocity.id = "velocity"
+                l_velocity.grid(row = 2, column = 0, sticky=tk.W)
+                l_mass = tk.Label(body_frame, text=f"Mass: {round(body.mass)}")
+                l_mass.id = "mass"
+                l_mass.grid(row = 3, column = 0, sticky=tk.W)
+                if body.type == BodyType.SPHERE:
+                    l_radius = tk.Label(body_frame, text=f"Radius: {round(body.radius)}")
+                    l_radius.id = "radius"
+                    l_radius.grid(row = 4, column = 0, sticky=tk.W)
+                l_revolving = tk.Label(body_frame, text=f"Revolving: {body.center_body_name}")
+                l_revolving.id = "revolving"
+                l_revolving.grid(row = 5, column = 0, sticky=tk.W)
+                if body.has_orbit:
+                    l_shape = tk.Label(body_frame, text=f"Shape: {body.orbit.shape}")
+                    l_shape.id = "shape"
+                    l_shape.grid(row = 1, column = 1, sticky=tk.W)
+                    l_a = tk.Label(body_frame, text=f"Semi major axis: {round(body.orbit.semi_major_axis)}")
+                    l_a.id = "a"
+                    l_a.grid(row = 2, column = 1, sticky=tk.W)
+                    l_b = tk.Label(body_frame, text=f"Semi minor axis: {round(body.orbit.semi_minor_axis)}")
+                    l_b.id = "b"
+                    l_b.grid(row = 3, column = 1, sticky=tk.W)
+                    l_e = tk.Label(body_frame, text=f"Eccentricity: {round(body.orbit.eccentricity, 4)}")
+                    l_e.id = "e"
+                    l_e.grid(row = 4, column = 1, sticky=tk.W)
+                    l_phi = tk.Label(body_frame, text=f"True anomaly: {round(math.degrees(body.orbit.true_anomaly))}")
+                    l_phi.id = "phi"
+                    l_phi.grid(row = 5, column = 1, sticky=tk.W)
+                tk.Button(body_frame, text=f"Remove {body.name}", command=lambda id=body.name: self.remove_body(id)).grid(row = 6, column = 0)
+                tk.Button(body_frame, text=f"Focus on {body.name}", command=lambda id=body.name: self.focus_on_body(id)).grid(row = 6, column = 1)
+                body_frame.grid(row = 0, column = 0, padx = 10, pady = 10, sticky=tk.W)
 
         row = 0
-        for body in bodies:
-            body_frame = tk.Frame(self.body_info)
-
-            tk.Label(body_frame, text=f"Name: {body.name}").grid(row = 0, column = 0, sticky=tk.W)
-            tk.Label(body_frame, text=f"Position: <{round(body.position[0])}, {round(body.position[1])}, {round(body.position[2])}>").grid(row = 1, column = 0, sticky=tk.W)
-            tk.Label(body_frame, text=f"Velocity: <{round(body.velocity[0])}, {round(body.velocity[1])}, {round(body.velocity[2])}>").grid(row = 2, column = 0, sticky=tk.W)
-            tk.Label(body_frame, text=f"Mass: {round(body.mass)}").grid(row = 3, column = 0, sticky=tk.W)
-            if body.type == BodyType.SPHERE:
-                tk.Label(body_frame, text=f"Radius: {round(body.radius)}").grid(row = 4, column = 0, sticky=tk.W)
-            tk.Label(body_frame, text=f"Revolving: {body.center_body_name}").grid(row = 5, column = 0, sticky=tk.W)
-            if body.has_orbit:
-                tk.Label(body_frame, text=f"Shape: {body.orbit.shape}").grid(row = 1, column = 1, sticky=tk.W)
-                tk.Label(body_frame, text=f"Semi major axis: {round(body.orbit.semi_major_axis)}").grid(row = 2, column = 1, sticky=tk.W)
-                tk.Label(body_frame, text=f"Semi minor axis: {round(body.orbit.semi_minor_axis)}").grid(row = 3, column = 1, sticky=tk.W)
-                tk.Label(body_frame, text=f"Eccentricity: {round(body.orbit.eccentricity, 4)}").grid(row = 4, column = 1, sticky=tk.W)
-                tk.Label(body_frame, text=f"True anomaly: {round(math.degrees(body.orbit.true_anomaly))}").grid(row = 5, column = 1, sticky=tk.W)
-            
-            tk.Button(body_frame, text=f"Remove {body.name}", command=lambda id=body.name: self.remove_body(id)).grid(row = 6, column = 0)
-            tk.Button(body_frame, text=f"Focus on {body.name}", command=lambda id=body.name: self.focus_on_body(id)).grid(row = 6, column = 1)
+        for body_frame in self.body_info.winfo_children():
             body_frame.grid(row = row, column = 0, padx = 10, pady = 10, sticky=tk.W)
             row += 1
     

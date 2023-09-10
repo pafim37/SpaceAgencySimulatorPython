@@ -50,6 +50,38 @@ class Body:
     def update_center_body_name(self, name):
         self.center_body_name = name
 
+    def move_analytic_body(self, focal_position):
+        if self.has_orbit and self.name != "Shuttle":
+            e = self.orbit.eccentricity
+            T = self.orbit.period
+            tp = self.orbit.perihelion_passage
+            curr_ae = self.__calculate_eccentric_anomaly(e, T, tp)
+            curr_phi = 2 * math.atan(sqrt((1 + e) / (1 - e)) * math.tan(curr_ae/2))
+            r = self.orbit.get_distance_from_focal_point(curr_phi)
+            x = r * math.cos(curr_phi)
+            y = r * math.sin(curr_phi)
+            z = 0 # TODO: change it
+            self.position = np.array([x, y, z]) + focal_position
+            self.velocity = 2 * np.cross(self.orbit.angular_momentum, self.position) / np.linalg.norm(self.position)**2
+            self.t += 0.1
+            return
+        else:
+            # print(f"Can't move {self.name}")
+            return    
+
+    def __calculate_eccentric_anomaly(self, e, T, tp, tolerance=1e-4, max_iteration = 100):
+        ae = 0
+        L = ae - e * math.sin(ae) - 2 * math.pi * (self.t - tp) / T
+        i = 0
+        while abs(L) > tolerance:
+            i += 1
+            if i > max_iteration:
+                return ae
+            L = ae - e * math.sin(ae) - 2 * math.pi * (self.t - tp) / T
+            dL = 1 - e * math.cos(ae)
+            ae = ae - L/dL
+        return ae
+
     def move_body(self, body, center_body):
         state = np.array([body.position[0], body.position[1], body.position[2], body.velocity[0], body.velocity[1], body.velocity[2]])
         state += self.runge_kutta_4(state, body, center_body)

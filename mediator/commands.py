@@ -1,7 +1,6 @@
 class Command(Enum):
     CREATE_OR_UPDATE_BODY = "CREATE_OR_UPDATE_BODY"                     # create or update custom body defined by user
     REMOVE_BODY = "REMOVE_BODY"                                         # remove body
-    UPDATE = "UPDATE"                                                   # update body system on urs and tk
     SET_HOME_CAMERA = "SET_HOME_CAMERA"             
     SET_POSITION_OX_CAMERA = "SET_POSITION_OX_CAMERA"
     SET_POSITION_OY_CAMERA = "SET_POSITION_OY_CAMERA"

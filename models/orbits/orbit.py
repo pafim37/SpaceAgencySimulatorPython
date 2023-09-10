@@ -18,6 +18,9 @@ class Orbit:
         velocity = body.get_relative_velocity_to(center_body)
         self.__calculate_orbit(position, velocity, u)
 
+    def get_distance_from_focal_point(self, phi):
+        return self.__p / (1 + self.__e * math.cos(phi))
+
     def __calculate_orbit(self, position, velocity, u):
         r = np.linalg.norm(position)
         v = np.linalg.norm(velocity)
@@ -31,9 +34,14 @@ class Orbit:
         phi = self.__calculate_true_anomaly(position, r, velocity, eVector, e)
         r_min = p / (1 + e)
         i = math.acos(hVector[2] / h)
+        period = 2 * math.pi * (a**3 / u)**0.5
+        ae = self.__calculate_eccentric_anomaly(e, phi)
+        tp = (ae-math.sin(ae))*(a**3 / u)**0.5  # perihelion passage
+        p = a * (1 - e**2)
 
         # parameters
         self.__position = position
+        self.__hVector = hVector
         self.__normalVector = hVector / h           # perpendicular vector to the plane of the orbit
         self.__shape = self.__assign_shape(e)       # orbit shape
         self.__a = a                                # semi major axis
@@ -41,9 +49,23 @@ class Orbit:
         self.__e = e                                # eccentricity
         self.__phi = phi                            # true anomaly
         self.__r_min = r_min                        # min distance between body and center body (focus)
+        self.__period = period
+        self.__tp = tp                              # perihelion passage
+        self.__p = p                                # the semi-latus rectum
 
         # spatial points
         self.__points = self.__calculate_points()
+
+    def __calculate_eccentric_anomaly(self, e, phi, precision=1e-6, max_iter=100):
+        ae = phi
+        # Newtona-Raphsona method
+        for _ in range(max_iter):
+            f = ae - e * math.sin(ae) - phi
+            df = 1 - e * math.cos(ae)
+            ae -= f / df
+            if abs(f) < precision:
+                return ae
+        return None
 
     def __calculate_semi_minor_axis(self, a, e):
         if e <= 1: #  ellipse case
@@ -76,6 +98,7 @@ class Orbit:
         # rotate basic orbit plane 
         rotation_axis = np.cross(np.array([0, 0, 1]), np.array(self.__normalVector))
         angle = math.acos(np.dot([0, 0, 1], self.__normalVector))
+        self.orbit_th = angle # TODO: hide it
         rotated_points = []
         for point in points:
             rotated_point = ReferenceSystem.rotate_along_axis(point, angle, rotation_axis, False)
@@ -85,6 +108,7 @@ class Orbit:
         orbit_vector = rotated_points[peri_point_index]
         rotation_axis = np.cross(orbit_vector, self.__position)
         angle = math.acos(np.dot(self.__normalize(orbit_vector), self.__normalize(self.__position)))
+        self.orbit_phi = angle # TODO: hide it
         output_points = []
         for point in rotated_points:
             output_point = ReferenceSystem.rotate_along_axis(point, angle, np.array(rotation_axis), False)
@@ -164,3 +188,21 @@ class Orbit:
     @property
     def points(self):
         return self.__points
+
+    @property
+    def period(self):
+        return self.__period
+
+    @property
+    def perihelion_passage(self):
+        return self.__tp
+    
+    @property
+    def semi_latus_rectum(self):
+        return self.__p
+
+    @property
+    def angular_momentum(self):
+        return self.__hVector
+
+        

@@ -47,6 +47,10 @@ class UrsForm:
         self.update_compass()
         self.root.step()
 
+    def update_with_synchronize_bodies(self, bodies):
+        self.synchronize_bodies(bodies)
+        self.update()
+
     def update_player(self):
         player = self.mediator.send(Command.GET_PLAYER)
         self.shuttle_rotation.rotation = (0, 0, 0)

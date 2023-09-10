@@ -50,11 +50,20 @@ class BodySystem:
         self.__bodies.sort(key=lambda x: x.mass)
         self.__update_u()
         self.__update_barycentrum()
+        
+    def update_orbit(self):
+        self.update()
         if len(self.__bodies) > 1:
             self.__find_orbits()
+
+    def move_bodies(self):
+        self.update()
         if self.movement:
-            self.update_shuttle()
-            # self.move_planets()
+            for body in self.__bodies:
+                if body.center_body_name == self.__barycentrum_name:
+                    continue
+                center_body = self.get_body_by_name(body.center_body_name)
+                body.move_analytic_body(center_body.position)
 
     def get_player(self):
         return self.get_body_by_name("Shuttle")
@@ -93,7 +102,6 @@ class BodySystem:
             body.has_orbit = False
         for i in range(len(self.__bodies) - 1):
             curr_body = self.__bodies[i]
-            print()
             distance = sys.float_info.max
             for j in range(i+1, len(self.__bodies)):
                 center_body = self.__bodies[j]
