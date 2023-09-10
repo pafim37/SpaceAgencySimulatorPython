@@ -94,7 +94,6 @@ class Mediator:
     def __update_body_system_on_backend_and_frontend(self, update_tk = True):
         self.body_system.update()
         bodies = self.body_system.get_bodies()
-        orbits = self.body_system.get_orbits()
         if update_tk:
-            self.tk_form.synchronize_bodies_and_orbits(bodies, orbits)
-        self.urs_form.synchronize_bodies_and_orbits(bodies, orbits)
+            self.tk_form.synchronize_bodies(bodies)
+        self.urs_form.synchronize_bodies(bodies)

@@ -132,7 +132,7 @@ class TkForm:
         }
         self.send_command_with_data(Command.SET_CONFIGURATION, data)
 
-    def synchronize_bodies_and_orbits(self, bodies, orbits):
+    def synchronize_bodies(self, bodies):
         for widget in self.body_info.winfo_children():
             if isinstance(widget, tk.Frame):
                 widget.destroy()
@@ -148,14 +148,12 @@ class TkForm:
             if body.type == BodyType.SPHERE:
                 tk.Label(body_frame, text=f"Radius: {round(body.radius)}").grid(row = 4, column = 0, sticky=tk.W)
             tk.Label(body_frame, text=f"Revolving: {body.center_body_name}").grid(row = 5, column = 0, sticky=tk.W)
-            orbit = [orbit for orbit in orbits if body.name == orbit.name]
-            if len(orbit) > 0:
-                orbit = orbit[0]
-                tk.Label(body_frame, text=f"Shape: {orbit.shape}").grid(row = 1, column = 1, sticky=tk.W)
-                tk.Label(body_frame, text=f"Semi major axis: {round(orbit.semi_major_axis)}").grid(row = 2, column = 1, sticky=tk.W)
-                tk.Label(body_frame, text=f"Semi minor axis: {round(orbit.semi_minor_axis)}").grid(row = 3, column = 1, sticky=tk.W)
-                tk.Label(body_frame, text=f"Eccentricity: {round(orbit.eccentricity, 4)}").grid(row = 4, column = 1, sticky=tk.W)
-                tk.Label(body_frame, text=f"True anomaly: {round(math.degrees(orbit.true_anomaly))}").grid(row = 5, column = 1, sticky=tk.W)
+            if body.has_orbit:
+                tk.Label(body_frame, text=f"Shape: {body.orbit.shape}").grid(row = 1, column = 1, sticky=tk.W)
+                tk.Label(body_frame, text=f"Semi major axis: {round(body.orbit.semi_major_axis)}").grid(row = 2, column = 1, sticky=tk.W)
+                tk.Label(body_frame, text=f"Semi minor axis: {round(body.orbit.semi_minor_axis)}").grid(row = 3, column = 1, sticky=tk.W)
+                tk.Label(body_frame, text=f"Eccentricity: {round(body.orbit.eccentricity, 4)}").grid(row = 4, column = 1, sticky=tk.W)
+                tk.Label(body_frame, text=f"True anomaly: {round(math.degrees(body.orbit.true_anomaly))}").grid(row = 5, column = 1, sticky=tk.W)
             
             tk.Button(body_frame, text=f"Remove {body.name}", command=lambda id=body.name: self.remove_body(id)).grid(row = 6, column = 0)
             tk.Button(body_frame, text=f"Focus on {body.name}", command=lambda id=body.name: self.focus_on_body(id)).grid(row = 6, column = 1)

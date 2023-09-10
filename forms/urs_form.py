@@ -97,17 +97,16 @@ class UrsForm:
         self.mediator = mediator
         mediator.register_urs_form(self)
 
-    def synchronize_bodies_and_orbits(self, bodies, orbits):
-        self.__synchronize_bodies(bodies)
-        self.__synchronize_orbits(orbits)
-
-    def __synchronize_bodies(self, bodies):
+    def synchronize_bodies(self, bodies):
         for body_entity in self.__bodies_entities:
             urs.destroy(body_entity)
         for body_coordinate_system_entity in self.__bodies_coordinate_system_entities:
             urs.destroy(body_coordinate_system_entity)
         for velocity_entity in self.__velocities_entities:
-            urs.destroy(velocity_entity) 
+            urs.destroy(velocity_entity)
+        for orbit_entity in self.__orbits_entities:
+            urs.destroy(orbit_entity)
+        self.__orbits_entities = []
         self.__bodies_entities = []
         self.__bodies_coordinate_system_entities = []
         self.__velocities_entities = []
@@ -121,18 +120,13 @@ class UrsForm:
                     self.__velocities_entities.append(velocity_entity)
                 entities = EntityConverter.from_coordinate_axes(body.local_coordinate_system)
                 self.__bodies_coordinate_system_entities.extend(entities)
+                if body.has_orbit:
+                    orbit_entity = EntityConverter.from_orbit(orbit=body.orbit, parent=self.group)
+                    orbit_entity.enabled = self.config.show_orbits
+                    self.__orbits_entities.append(orbit_entity)
                 for e in entities:
                     e.parent = self.group
         self.configure_coordinate_axes()
-
-    def __synchronize_orbits(self, orbits):
-        for orbit_entity in self.__orbits_entities:
-            urs.destroy(orbit_entity)
-        self.__orbits_entities = []
-        for orbit in orbits:
-            entity = EntityConverter.from_orbit(orbit=orbit, parent=self.group)
-            entity.enabled = self.config.show_orbits
-            self.__orbits_entities.append(entity)
 
     def __handle_keys(self):
         if urs.held_keys['c']:
