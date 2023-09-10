@@ -1,5 +1,4 @@
 from mediator.commands import *
-from models.bodies.body import Body
 import logging
 import numpy as np
 from ursina import *
@@ -10,7 +9,6 @@ class Mediator:
         self.camera = None
         self.log = logging.getLogger(__name__)
 
-    # TODO: create interface for those components
     def register_tk_form(self, tk_form):
         self.tk_form = tk_form
 
@@ -25,6 +23,12 @@ class Mediator:
 
     def send(self, command, data = None):
         match command:
+            case Command.THRUST_PLAYER:
+                self.body_system.thrust_shuttle(data)
+                self.__update_body_system_on_backend_and_frontend()
+                return
+            case Command.GET_PLAYER:
+                return self.body_system.get_player()
             case Command.CREATE_OR_UPDATE_BODY:
                 self.log.info(f"Starting handle {command}")
                 # TODO: add logs here Debug
@@ -63,6 +67,7 @@ class Mediator:
                 self.log.info(f"Starting handle {command}")
                 self.config.set_configuration(data)
                 self.urs_form.set_configuration(self.config)
+                self.body_system.movement = self.config.movement
                 self.log.info(f"End handle {command}")
                 return
             case Command.CALIBRATE_BARYCENTRUM_TO_ZERO:

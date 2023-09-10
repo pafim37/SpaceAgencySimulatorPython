@@ -78,8 +78,8 @@ class Orbit:
         angle = math.acos(np.dot([0, 0, 1], self.__normalVector))
         rotated_points = []
         for point in points:
-                rotated_point = ReferenceSystem.rotate_along_axis(point, angle, rotation_axis, False)
-                rotated_points.append(rotated_point)
+            rotated_point = ReferenceSystem.rotate_along_axis(point, angle, rotation_axis, False)
+            rotated_points.append(rotated_point)
 
         # find orbit direction and rotate it
         orbit_vector = rotated_points[peri_point_index]
@@ -88,12 +88,12 @@ class Orbit:
         output_points = []
         for point in rotated_points:
             output_point = ReferenceSystem.rotate_along_axis(point, angle, np.array(rotation_axis), False)
-            output_point = ReferenceSystem.rotate_along_axis(output_point, self.__phi, self.__normalVector, False)
+            output_point = ReferenceSystem.rotate_along_axis(output_point, self.__phi, -np.array(rotation_axis), False)
             output_points.append(output_point)
 
         # move translate
         translated_points = []
-        for point in rotated_points: # warning: that's was changed
+        for point in output_points:
             x = point[0] + self.__center_body.position[0] / 100
             y = point[1] + self.__center_body.position[1] / 100
             z = point[2] + self.__center_body.position[2] / 100

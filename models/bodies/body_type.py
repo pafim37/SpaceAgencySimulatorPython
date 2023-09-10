@@ -1,0 +1,5 @@
+class BodyType(Enum):
+    UNDEFINED = "UNDEFINED"
+    SPHERE = "SPHERE"
+    SHUTTLE = "SHUTTLE"
+    BARYCENTRUM = "BARYCENTRUM"

@@ -8,3 +8,4 @@ class Config:
         self.show_compass = data["show_compass"]
         self.show_orbits = data["show_orbits"]
         self.show_velocities = data["show_velocities"]
+        self.movement = data["movement"]

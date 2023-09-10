@@ -2,15 +2,23 @@ import math
 import numpy as np
 from ursina import *
 from models.coordinate_axes import CoordinateAxes 
+from models.bodies.body_type import BodyType
 
 class Body:
-    def __init__(self, name, position, velocity, mass = 1):
+    def __init__(self, name, position, velocity, mass = 1, body_type = BodyType.UNDEFINED):
         self.name = name
         self.position = position
         self.velocity = velocity
         self.mass = mass
         self.center_body_name = "" # TODO: change that
         self.local_coordinate_system = CoordinateAxes(name, position)
+        self.type = body_type
+        self.t = 0
+        self.has_orbit = False
+        self.orbit = None
+
+    def move(self, center_body):
+        self.move_body(self, center_body)
 
     def get_relative_position_to(self, body):
         return self.position - body.position
@@ -42,4 +50,33 @@ class Body:
     def update_center_body_name(self, name):
         self.center_body_name = name
 
-    
+    def move_body(self, body, center_body):
+        state = np.array([body.position[0], body.position[1], body.position[2], body.velocity[0], body.velocity[1], body.velocity[2]])
+        state += self.runge_kutta_4(state, body, center_body)
+        position = np.array([state[0], state[1], state[2]])
+        velocity = np.array([state[3], state[4], state[5]])
+        body.position = position
+        body.velocity = velocity
+
+    def runge_kutta_4(self, state, body, center_body):
+        t = self.t
+        h = 0.0001
+        k1 = self.two_body_problem(t + h, state, body, center_body)
+        k2 = self.two_body_problem(t + h/2, state + k1/2, body, center_body)
+        k3 = self.two_body_problem(t + h/2, state + k2/2, body, center_body)
+        k4 = self.two_body_problem(t + h, state + k3, body, center_body)
+        state = (k1 + 2*k2 + 2*k3 + k4) / 6
+        self.t += h
+        return state
+            
+    def two_body_problem(self, t, state, body, center_body):
+        position = np.array([state[0], state[1], state[2]])
+        velocity = np.array([state[3], state[4], state[5]])
+        relative_position = body.get_relative_position_to(center_body)
+        relative_velocity = body.get_relative_velocity_to(center_body)
+        r = np.linalg.norm(relative_position)
+        force = -1 * body.mass * center_body.mass * relative_position / r**3 # TODO: return G
+        a = force / body.mass
+        new_position = velocity * t + 0.5 * a * t**2
+        new_velocity = a * t
+        return np.array([new_position[0], new_position[1], new_position[2], new_velocity[0], new_velocity[1], new_velocity[2]])

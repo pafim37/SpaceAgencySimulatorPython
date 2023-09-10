@@ -1,6 +1,7 @@
 import ursina as urs
 import numpy as np
 import math
+from models.bodies.body_type import BodyType
 
 class EntityConverter:
     @staticmethod
@@ -23,13 +24,18 @@ class EntityConverter:
 
     @staticmethod
     def from_body(body, parent):
-        body_entity = urs.Entity(parent=parent, model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
-        color = EntityConverter.__get_body_color(body.name)
-        if isinstance(color, str):
-            body_entity.texture = color
-        else:
-            body_entity.color = color
-        return body_entity
+        # TODO: fix it
+        if body.type == BodyType.SPHERE:
+            body_entity = urs.Entity(parent=parent, model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
+            color = EntityConverter.__get_body_color(body.name)
+            if isinstance(color, str):
+                body_entity.texture = color
+            else:
+                body_entity.color = color
+            return body_entity
+        elif body.type == BodyType.SHUTTLE:
+            player_entity = urs.Entity(parent=parent, model="images\shuttle.obj", texture="shuttle.png", position = body.position / 100, scale = 0.0001 )
+            return player_entity
 
     @staticmethod
     def from_body_velocity(body, parent):

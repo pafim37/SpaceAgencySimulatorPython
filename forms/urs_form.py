@@ -5,6 +5,10 @@ import numpy as np
 from models.coordinate_axes import CoordinateAxes
 from models.compass import Compass
 from converters.entity_converter import EntityConverter
+from models.bodies.body_type import BodyType
+from mediator.commands import *
+import time
+
 class UrsForm:
     def __init__(self):
         self.root = urs.Ursina()
@@ -20,11 +24,8 @@ class UrsForm:
         self.__orbits_entities = []
         self.group = urs.Entity()
         self.shuttle_rotation = urs.Entity(parent=self.group)
-        self.player_entity = urs.Entity(parent=self.shuttle_rotation, model="images\shuttle.obj", texture="shuttle.png", position = (0, 0, 0), scale = 0.0001 )
-        self.player_velocity = urs.Vec3(0, 0, 0)
-        self.angle_x = 0
-        self.angle_y = 0
-        self.angle_z = 0
+        self.player_entity = None
+        self.start = time.time()
 
     def __setup_camera(self):
         self.camera.position = (5, 5, -5)
@@ -37,20 +38,26 @@ class UrsForm:
         urs.window.exit_button.visible = True      
         urs.window.fps_counter.enabled = False   
 
+    def assign_player(self):
+        self.player_entity = EntityConverter.from_body(body=self.mediator.send(Command.GET_PLAYER), parent=self.shuttle_rotation)
+
     def update(self):
-        self.__handle_keys()
         self.update_player()
+        self.__handle_keys()
         self.update_compass()
         self.root.step()
 
-
     def update_player(self):
-        self.shuttle_rotation.rotation_x += self.angle_x
-        self.shuttle_rotation.rotation_y += self.angle_y
-        self.shuttle_rotation.rotation_z += self.angle_z
+        player = self.mediator.send(Command.GET_PLAYER)
+        self.shuttle_rotation.rotation = (0, 0, 0)
+        self.shuttle_rotation.world_rotation = (0, 0, 0)
+        self.player_entity.rotation = (0, 0, 0)
+        self.shuttle_rotation.rotation_x = player.angle_x
+        self.shuttle_rotation.rotation_y = player.angle_y
+        self.shuttle_rotation.rotation_z = player.angle_z
         self.player_entity.rotation = self.player_entity.world_rotation
         self.shuttle_rotation.rotation = (0, 0, 0)
-        self.player_entity.position += self.player_velocity
+        self.player_entity.position = player.position / 100
 
     def __setup_compass(self):
         self.compass = Compass()
@@ -105,16 +112,17 @@ class UrsForm:
         self.__bodies_coordinate_system_entities = []
         self.__velocities_entities = []
         for body in bodies:
-            entity = EntityConverter.from_body(body=body, parent=self.group)
-            self.__bodies_entities.append(entity)
-            velocity_entity = EntityConverter.from_body_velocity(body=body, parent=self.group)
-            if velocity_entity is not None:
-                velocity_entity.enabled = self.config.show_velocities
-                self.__velocities_entities.append(velocity_entity)
-            entities = EntityConverter.from_coordinate_axes(body.local_coordinate_system)
-            self.__bodies_coordinate_system_entities.extend(entities)
-            for e in entities:
-                e.parent = self.group
+            if body.type == BodyType.SPHERE:
+                entity = EntityConverter.from_body(body=body, parent=self.group)
+                self.__bodies_entities.append(entity)
+                velocity_entity = EntityConverter.from_body_velocity(body=body, parent=self.group)
+                if velocity_entity is not None:
+                    velocity_entity.enabled = self.config.show_velocities
+                    self.__velocities_entities.append(velocity_entity)
+                entities = EntityConverter.from_coordinate_axes(body.local_coordinate_system)
+                self.__bodies_coordinate_system_entities.extend(entities)
+                for e in entities:
+                    e.parent = self.group
         self.configure_coordinate_axes()
 
     def __synchronize_orbits(self, orbits):
@@ -126,33 +134,6 @@ class UrsForm:
             entity.enabled = self.config.show_orbits
             self.__orbits_entities.append(entity)
 
-    def update_body_and_orbit(self, body, orbit):
-        for body_entity in self.__bodies_entities:
-            if body.name in body_entity.name:
-                self.__bodies_entities.remove(body_entity)
-                urs.destroy(body_entity)
-                break
-        for velocity_entity in self.__velocity_entities:
-            if body.name in velocity_entity.name:
-                self.__velocity_entities.remove(velocity_entity)
-                urs.destroy(velocity_entity)
-                break
-        for orbit_entity in self.__orbits_entities:
-            if body.name in orbit_entity.name:
-                self.__orbits_entities.remove(orbit_entity)
-                urs.destroy(orbit_entity)
-                break
-                
-        body_entity = EntityConverter.form_body(body)
-        self.__bodies_entities.append(body_entity)
-        velocity_entity = EntityConverter.from_body_velocity(body=body, parent=self.group)
-        if velocity_entity is not None:
-            self.__velocities_entities.append(velocity_entity)
-        if orbit is not None:
-            orbit_entity = EntityConverter.from_orbit(orbit=orbit, parent=self.group)
-            orbit_entity.enabled = self.config.show_orbits
-            self.__orbits_entities.append(orbit_entity)
- 
     def __handle_keys(self):
         if urs.held_keys['c']:
             self.camera.rotation_x += 0.5
@@ -191,22 +172,23 @@ class UrsForm:
             self.camera.position += (0, 0, -0.1)
 
         if urs.held_keys['t']:
-            self.angle_x += 0.1
+            self.mediator.send(Command.THRUST_PLAYER, "rotate_x_p")
 
         if urs.held_keys['y']:
-            self.angle_x -= 0.1
+            self.mediator.send(Command.THRUST_PLAYER, "rotate_x_m")
 
         if urs.held_keys['u']:
-            self.angle_y += 0.1
+            self.mediator.send(Command.THRUST_PLAYER, "rotate_y_p")
 
         if urs.held_keys['i']:
-            self.angle_y -= 0.1
+            self.mediator.send(Command.THRUST_PLAYER, "rotate_y_m")
 
         if urs.held_keys['o']:
-            self.angle_z += 0.1
+            self.mediator.send(Command.THRUST_PLAYER, "rotate_z_p")
 
         if urs.held_keys['p']:
-            self.angle_z -= 0.1
+            self.mediator.send(Command.THRUST_PLAYER, "rotate_z_m")
+        
         if urs.held_keys['r']:
             self.angle_x = 0
             self.angle_y = 0
@@ -225,8 +207,8 @@ class UrsForm:
             self.key_pressed = False
 
         if urs.held_keys['space'] and not self.key_pressed:
-            v = 0.001 * self.player_entity.right / np.linalg.norm(self.player_entity.right) 
-            self.player_velocity += v
+            v = 0.01 * self.player_entity.right / np.linalg.norm(self.player_entity.right) 
+            self.mediator.send(Command.THRUST_PLAYER, v)
             self.key_pressed = True
 
     def set_configuration(self, config):

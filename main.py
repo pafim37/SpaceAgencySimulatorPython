@@ -3,7 +3,6 @@ import numpy as np
 import math
 from ursina import *
 from models.bodies.body_system import BodySystem
-from models.bodies.body import Body
 from models.reference_system import ReferenceSystem
 from models.compass import Compass
 from models.config import Config
@@ -14,6 +13,7 @@ from mediator.mediator import Mediator
 import logging
 from forms.urs_form import UrsForm
 from mediator.commands import *
+from models.bodies.add_body_handler import AddBodyHandler
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -29,12 +29,16 @@ class App:
         self.tk_form = TkForm()
         self.config = Config()
         self.body_system = BodySystem(1) # TODO: configure G
+        AddBodyHandler.add_planets(self.body_system)
+        AddBodyHandler.add_shuttle(self.body_system)
 
         self.mediator = Mediator()
         self.tk_form.register_mediator(self.mediator)
         self.urs_form.register_mediator(self.mediator)
         self.body_system.register_mediator(self.mediator) 
         self.config.register_mediator(self.mediator) 
+
+        self.urs_form.assign_player()
 
         self.tk_form.send_configuration()
         self.mediator.send(Command.UPDATE)
@@ -45,7 +49,8 @@ class App:
         while running:
             self.tk_form.update()
             self.urs_form.update()
-            self.mediator.send(Command.UPDATE, False)
+            if self.config.movement:
+                self.mediator.send(Command.UPDATE, False)
             
 
 if __name__ == '__main__':

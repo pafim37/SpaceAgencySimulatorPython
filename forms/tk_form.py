@@ -1,6 +1,7 @@
 import tkinter as tk
 from mediator.commands import *
 import math
+from models.bodies.body_type import BodyType
 
 class TkForm:
     def __init__(self):
@@ -27,12 +28,12 @@ class TkForm:
         self.root.geometry("720x700")
 
     def __create_variables(self):
-        self.body_name_var = tk.StringVar(self.root, "Earth")
-        self.body_position_x_var = tk.DoubleVar(self.root, 50)
-        self.body_position_y_var = tk.DoubleVar(self.root, 50)
+        self.body_name_var = tk.StringVar(self.root, "Venus")
+        self.body_position_x_var = tk.DoubleVar(self.root, -75)
+        self.body_position_y_var = tk.DoubleVar(self.root, -75)
         self.body_position_z_var = tk.DoubleVar(self.root, 0)
-        self.body_velocity_x_var = tk.DoubleVar(self.root, 5)
-        self.body_velocity_y_var = tk.DoubleVar(self.root, 0)
+        self.body_velocity_x_var = tk.DoubleVar(self.root, 0)
+        self.body_velocity_y_var = tk.DoubleVar(self.root, 5)
         self.body_velocity_z_var = tk.DoubleVar(self.root, 0)
         self.body_mass_var = tk.DoubleVar(self.root, 1)
         self.body_radius_var = tk.DoubleVar(self.root, 1)
@@ -42,6 +43,7 @@ class TkForm:
         self.orbits_enabled_var = tk.BooleanVar(self.root, True)
         self.velocity_enabled_var = tk.BooleanVar(self.root, True)
         self.barycentrum_enabled_var = tk.BooleanVar(self.root, False)
+        self.movement_var = tk.BooleanVar(self.root, False)
 
     def __setup_frames(self):
         body_frame = self.__setup_body_frame()
@@ -89,6 +91,7 @@ class TkForm:
         tk.Checkbutton(configuration_lf, variable = self.orbits_enabled_var, onvalue = True, offvalue = False, text = "Show orbits", command = self.send_configuration).grid(row = 2, column = 0, sticky="W", padx = 10)
         tk.Checkbutton(configuration_lf, variable = self.barycentrum_enabled_var, onvalue = True, offvalue = False, text = "Calibrate barycentrum to zero", command = self.__calibrate_barycentrum_to_zero).grid(row = 3, column = 0, sticky="W", padx = 10)
         tk.Checkbutton(configuration_lf, variable = self.velocity_enabled_var, onvalue = True, offvalue = False, text = "Show velocities", command = self.send_configuration).grid(row = 4, column = 0, sticky="W", padx = 10)
+        tk.Checkbutton(configuration_lf, variable = self.movement_var, onvalue = True, offvalue = False, text = "Movement", command = self.send_configuration).grid(row = 5, column = 0, sticky="W", padx = 10)
         return configuration_lf
 
     def __setup_camera_frame(self):
@@ -124,7 +127,8 @@ class TkForm:
             "show_coordinate_axes": self.coordinate_axes_enabled_var.get(),
             "show_compass": self.compass_enabled_var.get(),
             "show_orbits": self.orbits_enabled_var.get(),
-            "show_velocities": self.velocity_enabled_var.get()
+            "show_velocities": self.velocity_enabled_var.get(),
+            "movement": self.movement_var.get()
         }
         self.send_command_with_data(Command.SET_CONFIGURATION, data)
 
@@ -141,7 +145,8 @@ class TkForm:
             tk.Label(body_frame, text=f"Position: <{round(body.position[0])}, {round(body.position[1])}, {round(body.position[2])}>").grid(row = 1, column = 0, sticky=tk.W)
             tk.Label(body_frame, text=f"Velocity: <{round(body.velocity[0])}, {round(body.velocity[1])}, {round(body.velocity[2])}>").grid(row = 2, column = 0, sticky=tk.W)
             tk.Label(body_frame, text=f"Mass: {round(body.mass)}").grid(row = 3, column = 0, sticky=tk.W)
-            tk.Label(body_frame, text=f"Radius: {round(body.radius)}").grid(row = 4, column = 0, sticky=tk.W)
+            if body.type == BodyType.SPHERE:
+                tk.Label(body_frame, text=f"Radius: {round(body.radius)}").grid(row = 4, column = 0, sticky=tk.W)
             tk.Label(body_frame, text=f"Revolving: {body.center_body_name}").grid(row = 5, column = 0, sticky=tk.W)
             orbit = [orbit for orbit in orbits if body.name == orbit.name]
             if len(orbit) > 0:
