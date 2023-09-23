@@ -6,6 +6,7 @@ import time
 import sys
 import logging
 from ursina import color
+from mathematica.vector import Vector
 np.set_printoptions(suppress=True)
 class BodySystem:
     def __init__(self, G = 6.674301515 * math.pow(10, -11)):
@@ -86,7 +87,10 @@ class BodySystem:
         if total_mass == 0:
             self.barycentrum = BarycentrumBody(position = np.zeros(3), velocity = np.zeros(3), mass = total_mass)
         else:
-            position = 1 / total_mass * sum(body.mass * body.position for body in self.__bodies)
+            v = Vector.zeros()
+            for body in self.__bodies:
+                v += body.mass * body.position 
+            position = 1 / total_mass * v
             self.barycentrum = BarycentrumBody(position = position, velocity = np.zeros(3), mass = total_mass)
         if self.calibrate_barycentrum:
             for body in self.__bodies:
@@ -107,7 +111,7 @@ class BodySystem:
                 center_body = self.__bodies[j]
                 if curr_body.mass / center_body.mass > 0.03: # TODO: extract this value
                     continue
-                relative_distance = np.linalg.norm(curr_body.get_relative_position_to(center_body))
+                relative_distance = curr_body.get_relative_position_to(center_body).magnitude()
                 influence = center_body.get_sphere_of_influence_related_to(curr_body)
                 if (relative_distance < distance and influence >= relative_distance):
                     distance = relative_distance

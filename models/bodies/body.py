@@ -3,6 +3,7 @@ import numpy as np
 from ursina import *
 from models.coordinate_axes import CoordinateAxes 
 from models.bodies.body_type import BodyType
+from mathematica.vector import Vector
 
 class Body:
     def __init__(self, name, position, velocity, mass = 1, body_type = BodyType.UNDEFINED):
@@ -28,7 +29,7 @@ class Body:
 
     def get_sphere_of_influence_related_to(self, body):
         # TODO: Improve that
-        distance = np.linalg.norm(self.position - body.position)
+        distance = (self.position - body.position).magnitude()
         mass_ratio = math.pow(self.mass / body.mass, 0.4)
         return distance * mass_ratio
 
@@ -65,9 +66,9 @@ class Body:
             z = -r * math.sin(self.orbit.orbit_th) * math.sin(curr_phi)
             print("Begin: ", self.name, self.position)
             print("curr_phi", math.degrees(curr_phi), math.degrees(self.orbit.orbit_th))
-            self.position = np.array([x, y, z]) + focal_position
+            self.position = Vector(x, y, z) + focal_position
             print("After: ", self.name, self.position, x, y, z, r * math.cos(curr_phi) * math.cos(self.orbit.orbit_phi))
-            self.velocity = 2 * np.cross(self.orbit.angular_momentum, self.position) / np.linalg.norm(self.position)**2
+            self.velocity = 2 * self.orbit.angular_momentum.cross(self.position) / self.position.magnitude()**2
             print("After2: ", self.name, self.position, self.velocity)
             self.t += 0.1
             return

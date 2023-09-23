@@ -3,6 +3,7 @@ import math
 from ursina import *
 from models.reference_system import ReferenceSystem
 from enum import Enum
+from mathematica.vector import Vector
 
 class OrbitType(Enum):
     CIRCULAR = 1
@@ -22,18 +23,18 @@ class Orbit:
         return self.__p / (1 + self.__e * math.cos(phi))
 
     def __calculate_orbit(self, position, velocity, u):
-        r = np.linalg.norm(position)
-        v = np.linalg.norm(velocity)
+        r = position.magnitude()
+        v = velocity.magnitude()
         a = 1 / (2 / r - v * v / u)
-        hVector = np.array(np.cross(position, velocity))
-        h = np.linalg.norm(hVector)
+        hVector = position.cross(velocity)
+        h = hVector.magnitude()
         p = h * h / u
-        eVector = 1 / u * np.array(np.cross(velocity, hVector)) - 1 / r * np.array(position)
-        e = np.linalg.norm(eVector)
+        eVector = 1 / u * velocity.cross(hVector) - 1 / r * position
+        e = eVector.magnitude()
         b = self.__calculate_semi_minor_axis(a, e)
         phi = self.__calculate_true_anomaly(position, r, velocity, eVector, e)
         r_min = p / (1 + e)
-        i = math.acos(hVector[2] / h)
+        i = math.acos(hVector.y / h)
         period = 2 * math.pi * (a**3 / u)**0.5
         ae = self.__calculate_eccentric_anomaly(e, phi)
         tp = (ae-math.sin(ae))*(a**3 / u)**0.5  # perihelion passage
@@ -56,7 +57,7 @@ class Orbit:
 
         # spatial points
         self.__points = self.__calculate_points()
-        print(self.name, "orbit phi: ", math.degrees(self.orbit_phi), "orbit th: ", math.degrees(self.orbit_th), "fi: ", self.__phi, "first_angle: ", math.degrees(self.first_angle))
+        print(self.name, "orbit phi: ", math.degrees(self.orbit_phi), "orbit th: ", math.degrees(self.orbit_th), "fi: ", self.__phi)
 
     def __calculate_eccentric_anomaly(self, e, phi, precision=1e-6, max_iter=100):
         ae = phi
@@ -76,11 +77,11 @@ class Orbit:
             return a * math.sqrt(e * e - 1)
 
     def __calculate_true_anomaly(self, position, r, velocity, eVector, e):
-        dotProduct = np.dot(eVector, position) 
+        dotProduct = eVector.dot(position) 
         if dotProduct >= 0:
-            return math.acos(np.dot(eVector,position) / (e * r))    
+            return math.acos(eVector.dot(position) / (e * r))    
         else:
-            return 2 * math.pi - math.acos(np.dot(eVector,position) / (e * r))
+            return 2 * math.pi - math.acos(eVector.dot(position) / (e * r))
     
     def __assign_shape(self, e):
         if e == 0:
@@ -98,9 +99,8 @@ class Orbit:
         # create basic plane orbit points
         points, peri_point_index = self.__get_points_and_peri_point_index()
         # rotate basic orbit plane 
-        rotation_axis = np.cross(np.array([0, 0, 1]), np.array(self.__normalVector))
-        angle = math.acos(np.dot([0, 0, 1], self.__normalVector))
-        self.first_angle = angle
+        rotation_axis = Vector.Z().cross(self.__normalVector)
+        angle = math.acos(Vector.Z().dot(self.__normalVector))
         self.orbit_th = angle # TODO: hide it
         rotated_points = []
         for point in points:
@@ -108,28 +108,30 @@ class Orbit:
             rotated_points.append(rotated_point)
 
         # find orbit direction and rotate it
-        orbit_vector = rotated_points[peri_point_index]
-        orbit_velocity = np.cross(orbit_vector, -self.__hVector) / self.__h**2
-        orbit_velocity = orbit_velocity / np.linalg.norm(orbit_velocity)
-        h_orbit = np.cross(orbit_vector, orbit_velocity)
-        self.direction = orbit_velocity[1]
+        orbit_vector_point = rotated_points[peri_point_index]
+        orbit_vector = Vector(orbit_vector_point[0], orbit_vector_point[1], orbit_vector_point[2])
+        print(orbit_vector, self.__hVector, -self.__hVector)
+        orbit_velocity = orbit_vector.cross(-self.__hVector) / self.__h**2
+        orbit_velocity.normalize()
+        h_orbit = orbit_vector.cross(orbit_velocity)
+        self.direction = orbit_velocity.y
         print("direction: ", self.name, self.direction)
-        rotation_axis = np.cross(orbit_vector, self.__position)
-        angle = math.acos(np.dot(self.__normalize(orbit_vector), self.__normalize(self.__position)))
+        rotation_axis = orbit_vector.cross(self.__position)
+        angle = math.acos(orbit_vector.normalize().dot(self.__position.get_normalize()))
         self.orbit_phi = angle # TODO: hide it
         output_points = []
         for point in rotated_points:
-            output_point = ReferenceSystem.rotate_along_axis(point, angle, np.array(rotation_axis), False)
-            output_point = ReferenceSystem.rotate_along_axis(output_point, self.__phi, -np.array(rotation_axis), False)
+            output_point = ReferenceSystem.rotate_along_axis(point, angle, rotation_axis, False)
+            output_point = ReferenceSystem.rotate_along_axis(output_point, self.__phi, -rotation_axis, False)
             output_points.append(output_point)
 
         # move translate
         translated_points = []
         for point in output_points:
-            x = point[0] + self.__center_body.position[0] / 100
-            y = point[1] + self.__center_body.position[1] / 100
-            z = point[2] + self.__center_body.position[2] / 100
-            translated_points.append(Vec3(x, y, z))
+            x = point[0] + self.__center_body.position.x / 100
+            y = point[1] + self.__center_body.position.y / 100
+            z = point[2] + self.__center_body.position.z / 100
+            translated_points.append([x, y, z])
         return translated_points
 
     def __get_points_and_peri_point_index(self):

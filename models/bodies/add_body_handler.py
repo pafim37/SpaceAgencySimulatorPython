@@ -1,6 +1,7 @@
 from models.bodies.body_type import BodyType
 from models.bodies.sphere_body import SphereBody
 from models.bodies.shuttle_body import ShuttleBody
+from mathematica.vector import Vector
 import numpy as np
 
 class AddBodyHandler():
@@ -8,10 +9,10 @@ class AddBodyHandler():
     def add_planets(body_system):
         AddBodyHandler.__add_sun(body_system)
         AddBodyHandler.__add_test1(body_system)
-        # AddBodyHandler.__add_test2(body_system)
+        AddBodyHandler.__add_test2(body_system)
         AddBodyHandler.__add_test3(body_system)
-        # AddBodyHandler.__add_test4(body_system)
-        AddBodyHandler.__add_test5(body_system)
+        # # AddBodyHandler.__add_test4(body_system)
+        # AddBodyHandler.__add_test5(body_system)
         # AddBodyHandler.__add_mercury(body_system)
         # AddBodyHandler.__add_venus(body_system)
         # AddBodyHandler.__add_earth(body_system) 
@@ -26,32 +27,32 @@ class AddBodyHandler():
 
     @staticmethod
     def __add_test1(body_system):
-        body = SphereBody(name = "test1", position = np.array([50.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 0.5)
+        body = SphereBody(name = "test1", position = 50 * Vector.X(), velocity = 17 * Vector.Y(), mass = 10, radius = 0.5)
         body_system.add_body(body)
     
     @staticmethod
     def __add_test2(body_system):
-        body = SphereBody(name = "test2", position = np.array([-50.0, 0, 0]), velocity = np.array([0, 17, 0]), mass = 10, radius = 0.5)
+        body = SphereBody(name = "test2", position = -50 * Vector.X(), velocity = 17 * Vector.Y(), mass = 10, radius = 0.5)
         body_system.add_body(body)
     
     @staticmethod
     def __add_test3(body_system):
-        body = SphereBody(name = "test3", position = np.array([50.0, 0, 0]), velocity = np.array([0, 0, 17]), mass = 10, radius = 0.5)
+        body = SphereBody(name = "test3", position = 50 * Vector.X(), velocity = 17 * Vector.Z(), mass = 10, radius = 0.5)
         body_system.add_body(body)
     
     @staticmethod
     def __add_test4(body_system):
-        body = SphereBody(name = "test4", position = np.array([50.0, 0, 0]), velocity = np.array([0, -17, 0]), mass = 10, radius = 0.5)
+        body = SphereBody(name = "test4", position = 50 * Vector.X(), velocity = -17 * Vector.Y(), mass = 10, radius = 0.5)
         body_system.add_body(body)
     
     @staticmethod
     def __add_test5(body_system):
-        body = SphereBody(name = "test5", position = np.array([0.0, 0, -50]), velocity = np.array([0, 17, 0]), mass = 10, radius = 0.5)
+        body = SphereBody(name = "test5", position = -50 * Vector.Z(), velocity = 17 * Vector.Y(), mass = 10, radius = 0.5)
         body_system.add_body(body)
 
     @staticmethod
     def __add_sun(body_system):
-        body = SphereBody(name = "Sun", position = np.array([0.0, 0, 0]), velocity = np.zeros(3), mass = 10000, radius = 2)
+        body = SphereBody(name = "Sun", position = Vector.zeros(), velocity = Vector.zeros(), mass = 10000, radius = 2)
         body_system.add_body(body)
     
     @staticmethod
@@ -81,5 +82,5 @@ class AddBodyHandler():
     
     @staticmethod
     def __add_shuttle(body_system):
-        body = ShuttleBody(name = "Shuttle", position = np.array([-50.0, 0, 0]), velocity = np.array([0.0, -10, 0]), mass = 1)
+        body = ShuttleBody(name = "Shuttle", position = -50 * Vector.X(), velocity = -10 * Vector.Y(), mass = 1)
         body_system.add_body(body)

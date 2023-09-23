@@ -2,6 +2,7 @@ import ursina as urs
 import numpy as np
 import math
 from models.bodies.body_type import BodyType
+from mathematica.vector import Vector
 
 class EntityConverter:
     @staticmethod
@@ -26,7 +27,7 @@ class EntityConverter:
     def from_body(body, parent):
         # TODO: fix it
         if body.type == BodyType.SPHERE:
-            body_entity = urs.Entity(parent=parent, model="sphere", name = f"{body.name}_body_entity", position = body.position / 100, scale = body.radius / 10)
+            body_entity = urs.Entity(parent=parent, model="sphere", name = f"{body.name}_body_entity", position = (body.position / 100).to_urs_Vec3(), scale = body.radius / 10)
             color = EntityConverter.__get_body_color(body.name)
             if isinstance(color, str):
                 body_entity.texture = color
@@ -34,19 +35,19 @@ class EntityConverter:
                 body_entity.color = color
             return body_entity
         elif body.type == BodyType.SHUTTLE:
-            player_entity = urs.Entity(parent=parent, model="images\shuttle.obj", texture="shuttle.png", position = body.position / 100, scale = 0.0001 )
+            player_entity = urs.Entity(parent=parent, model="images\shuttle.obj", texture="shuttle.png", position = (body.position / 100).to_urs_Vec3(), scale = 0.0001 )
             return player_entity
 
     @staticmethod
     def from_body_velocity(body, parent):
         if not np.any(body.velocity):
             return None
-        velocity_vector_entity = urs.Entity(parent=parent, model="arrow", name = f"{body.name}_velocity_entity", position = body.position / 100, scale = (3 * body.radius / 10, 0.1, 0.1), color = urs.color.white)
-        vector_start = (1, 0, 0)
+        velocity_vector_entity = urs.Entity(parent=parent, model="arrow", name = f"{body.name}_velocity_entity", position = (body.position / 100).to_urs_Vec3(), scale = (3 * body.radius / 10, 0.1, 0.1), color = urs.color.white)
+        vector_start = Vector.X()
         vector_end = body.velocity
-        d = np.dot(vector_start, vector_end)
-        w = np.cross(vector_start, vector_end)
-        q = urs.Quat(d + math.sqrt(d*d + np.dot(w, w)), w[0], w[1], w[2])
+        d = vector_start.dot(vector_end)
+        w = vector_start.cross(vector_end)
+        q = urs.Quat(d + math.sqrt(d*d + w.dot(w)), w.x, w.y, w.z)
         velocity_vector_entity.quaternion = q / np.linalg.norm(q)
         return velocity_vector_entity
 

@@ -166,10 +166,10 @@ class TkForm:
                     except:
                         continue
                     if w.id =="position":
-                        w["text"] = f"Position: <{round(body.position[0])}, {round(body.position[1])}, {round(body.position[2])}>"
+                        w["text"] = f"Position: <{round(body.position.x)}, {round(body.position.y)}, {round(body.position.z)}>"
                         continue
                     if w.id =="velocity":
-                        w["text"] = f"Velocity: <{round(body.velocity[0])}, {round(body.velocity[1])}, {round(body.velocity[2])}>"
+                        w["text"] = f"Velocity: <{round(body.velocity.x)}, {round(body.velocity.y)}, {round(body.velocity.z)}>"
                         continue
                     if w.id =="mass":
                         w["text"] = f"Mass: {round(body.mass)}"
@@ -197,10 +197,10 @@ class TkForm:
                 body_frame = tk.Frame(self.body_info)
                 body_frame.id = body.name
                 tk.Label(body_frame, text=f"Name: {body.name}").grid(row = 0, column = 0, sticky=tk.W)
-                l_position = tk.Label(body_frame, text=f"Position: <{round(body.position[0])}, {round(body.position[1])}, {round(body.position[2])}>")
+                l_position = tk.Label(body_frame, text=f"Position: <{round(body.position.x)}, {round(body.position.y)}, {round(body.position.z)}>")
                 l_position.id = "position"
                 l_position.grid(row = 1, column = 0, sticky=tk.W)
-                l_velocity = tk.Label(body_frame, text=f"Velocity: <{round(body.velocity[0])}, {round(body.velocity[1])}, {round(body.velocity[2])}>")
+                l_velocity = tk.Label(body_frame, text=f"Velocity: <{round(body.velocity.x)}, {round(body.velocity.y)}, {round(body.velocity.z)}>")
                 l_velocity.id = "velocity"
                 l_velocity.grid(row = 2, column = 0, sticky=tk.W)
                 l_mass = tk.Label(body_frame, text=f"Mass: {round(body.mass)}")

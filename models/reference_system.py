@@ -1,5 +1,6 @@
 import math
 import numpy as np
+from mathematica.vector import Vector
 class ReferenceSystem:
     def __init__(self, origin, point):
         self.x = point[0] - origin[0]
@@ -15,10 +16,10 @@ class ReferenceSystem:
             return point
         if degrees:
             angle = angle * math.pi / 180
-        norm_rot_axis = rot_axis / np.linalg.norm(rot_axis)
+        norm_rot_axis = rot_axis.normalize()
         point_quaternion = np.quaternion(0, point[0], point[1], point[2])
         sin = math.sin(angle / 2)
-        q = np.quaternion(math.cos(angle / 2), sin * norm_rot_axis[0], sin * norm_rot_axis[1], sin * norm_rot_axis[2])
+        q = np.quaternion(math.cos(angle / 2), sin * norm_rot_axis.x, sin * norm_rot_axis.y, sin * norm_rot_axis.z)
         conjugate_q = np.conjugate(q)
         result_point_quaternion = q * point_quaternion * conjugate_q
         return np.array([result_point_quaternion.x, result_point_quaternion.y, result_point_quaternion.z])
