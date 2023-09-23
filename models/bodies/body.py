@@ -55,14 +55,20 @@ class Body:
             e = self.orbit.eccentricity
             T = self.orbit.period
             tp = self.orbit.perihelion_passage
-            curr_ae = self.__calculate_eccentric_anomaly(e, T, tp)
+            curr_ae = self.__calculate_eccentric_anomaly(e, T, tp) # self.orbit.direction * 
             curr_phi = 2 * math.atan(sqrt((1 + e) / (1 - e)) * math.tan(curr_ae/2))
+            print(math.degrees(curr_phi), math.sin(curr_phi), math.cos(curr_phi))
             r = self.orbit.get_distance_from_focal_point(curr_phi)
-            x = r * math.cos(curr_phi)
-            y = r * math.sin(curr_phi)
-            z = 0 # TODO: change it
+            #####
+            x = r * math.cos(curr_phi) # -r * math.sin(curr_phi) * math.sin(self.orbit.orbit_th) + r * math.cos(curr_phi) * math.cos(self.orbit.orbit_phi) 
+            y =  r * math.sin(curr_phi) * math.cos(self.orbit.orbit_th) + r * math.sin(curr_phi) * math.sin(self.orbit.orbit_phi) # r * math.sin(curr_phi - self.orbit.orbit_phi) * math.sin(curr_phi - self.orbit.orbit_th)
+            z = -r * math.sin(self.orbit.orbit_th) * math.sin(curr_phi)
+            print("Begin: ", self.name, self.position)
+            print("curr_phi", math.degrees(curr_phi), math.degrees(self.orbit.orbit_th))
             self.position = np.array([x, y, z]) + focal_position
+            print("After: ", self.name, self.position, x, y, z, r * math.cos(curr_phi) * math.cos(self.orbit.orbit_phi))
             self.velocity = 2 * np.cross(self.orbit.angular_momentum, self.position) / np.linalg.norm(self.position)**2
+            print("After2: ", self.name, self.position, self.velocity)
             self.t += 0.1
             return
         else:

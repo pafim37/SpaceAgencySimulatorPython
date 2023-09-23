@@ -42,6 +42,7 @@ class Orbit:
         # parameters
         self.__position = position
         self.__hVector = hVector
+        self.__h = h
         self.__normalVector = hVector / h           # perpendicular vector to the plane of the orbit
         self.__shape = self.__assign_shape(e)       # orbit shape
         self.__a = a                                # semi major axis
@@ -55,6 +56,7 @@ class Orbit:
 
         # spatial points
         self.__points = self.__calculate_points()
+        print(self.name, "orbit phi: ", math.degrees(self.orbit_phi), "orbit th: ", math.degrees(self.orbit_th), "fi: ", self.__phi, "first_angle: ", math.degrees(self.first_angle))
 
     def __calculate_eccentric_anomaly(self, e, phi, precision=1e-6, max_iter=100):
         ae = phi
@@ -98,6 +100,7 @@ class Orbit:
         # rotate basic orbit plane 
         rotation_axis = np.cross(np.array([0, 0, 1]), np.array(self.__normalVector))
         angle = math.acos(np.dot([0, 0, 1], self.__normalVector))
+        self.first_angle = angle
         self.orbit_th = angle # TODO: hide it
         rotated_points = []
         for point in points:
@@ -106,6 +109,11 @@ class Orbit:
 
         # find orbit direction and rotate it
         orbit_vector = rotated_points[peri_point_index]
+        orbit_velocity = np.cross(orbit_vector, -self.__hVector) / self.__h**2
+        orbit_velocity = orbit_velocity / np.linalg.norm(orbit_velocity)
+        h_orbit = np.cross(orbit_vector, orbit_velocity)
+        self.direction = orbit_velocity[1]
+        print("direction: ", self.name, self.direction)
         rotation_axis = np.cross(orbit_vector, self.__position)
         angle = math.acos(np.dot(self.__normalize(orbit_vector), self.__normalize(self.__position)))
         self.orbit_phi = angle # TODO: hide it
