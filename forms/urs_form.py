@@ -42,7 +42,7 @@ class UrsForm:
         self.player_entity = EntityConverter.from_body(body=self.mediator.send(Command.GET_PLAYER), parent=self.shuttle_rotation)
 
     def update(self):
-        self.update_player()
+        # self.update_player()
         self.__handle_keys()
         self.update_compass()
         self.root.step()

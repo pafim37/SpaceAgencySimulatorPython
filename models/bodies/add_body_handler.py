@@ -11,8 +11,9 @@ class AddBodyHandler():
         AddBodyHandler.__add_test1(body_system)
         AddBodyHandler.__add_test2(body_system)
         AddBodyHandler.__add_test3(body_system)
-        # # AddBodyHandler.__add_test4(body_system)
-        # AddBodyHandler.__add_test5(body_system)
+        # AddBodyHandler.__add_test4(body_system)
+        AddBodyHandler.__add_test5(body_system)
+        AddBodyHandler.__add_test6(body_system)
         # AddBodyHandler.__add_mercury(body_system)
         # AddBodyHandler.__add_venus(body_system)
         # AddBodyHandler.__add_earth(body_system) 
@@ -48,6 +49,11 @@ class AddBodyHandler():
     @staticmethod
     def __add_test5(body_system):
         body = SphereBody(name = "test5", position = -50 * Vector.Z(), velocity = 17 * Vector.Y(), mass = 10, radius = 0.5)
+        body_system.add_body(body)
+    
+    @staticmethod
+    def __add_test6(body_system):
+        body = SphereBody(name = "test6", position = 50 * Vector.Z(), velocity = 17 * Vector.Y(), mass = 10, radius = 0.5)
         body_system.add_body(body)
 
     @staticmethod

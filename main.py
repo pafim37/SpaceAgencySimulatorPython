@@ -55,8 +55,8 @@ class App:
 
     def __prepare_windows(self):
         AddBodyHandler.add_planets(self.body_system)
-        AddBodyHandler.add_shuttle(self.body_system)
-        self.urs_form.assign_player()
+        # AddBodyHandler.add_shuttle(self.body_system)
+        # self.urs_form.assign_player()
         self.body_system.update_orbit()
         bodies = self.body_system.get_bodies()
         self.tk_form.update_with_synchronize_bodies(bodies)

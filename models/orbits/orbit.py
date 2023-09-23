@@ -103,7 +103,6 @@ class Orbit:
         if rotation_axis==Vector.zeros():
             rotation_axis = Vector.Z()
         angle = math.acos(Vector.Z().dot(self.__normalVector))
-        self.orbit_th = angle # TODO: hide it
         rotated_points = []
         for point in points:
             rotated_point = ReferenceSystem.rotate_along_axis(point, angle, rotation_axis, False)
@@ -111,15 +110,17 @@ class Orbit:
 
         # find orbit direction and rotate it
         orbit_vector_point = rotated_points[peri_point_index]
-        orbit_vector = Vector(orbit_vector_point[0], orbit_vector_point[1], orbit_vector_point[2]).round8().normalize()
-        orbit_velocity = orbit_vector.cross(-self.__hVector) / self.__h**2
+        orbit_pericenter_vector = Vector(orbit_vector_point[0], orbit_vector_point[1], orbit_vector_point[2]).round8().normalize()
+        orbit_velocity = orbit_pericenter_vector.cross(-self.__hVector) / self.__h**2
+        rst = ReferenceSystem([0, 0, 0], [orbit_pericenter_vector.x, orbit_pericenter_vector.y, orbit_pericenter_vector.z])
+        self.orbit_phi = rst.phi
+        self.orbit_th = rst.th
         orbit_velocity.normalize()
-        h_orbit = orbit_vector.cross(orbit_velocity)
+        h_orbit = orbit_pericenter_vector.cross(orbit_velocity)
         self.direction = orbit_velocity.y
         print("direction: ", self.name, self.direction)
-        rotation_axis = orbit_vector.cross(self.__position)
-        angle = math.acos(orbit_vector.normalize().dot(self.__position.get_normalize()))
-        self.orbit_phi = angle # TODO: hide it
+        rotation_axis = orbit_pericenter_vector.cross(self.__position)
+        angle = math.acos(orbit_pericenter_vector.normalize().dot(self.__position.get_normalize()))
         output_points = []
         for point in rotated_points:
             output_point = ReferenceSystem.rotate_along_axis(point, angle, rotation_axis, False)
