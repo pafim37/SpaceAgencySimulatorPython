@@ -50,10 +50,7 @@ class Vector:
         return Vector(self.x - other.x, self.y - other.y, self.z - other.z)
 
     def __neg__(self):
-        self.x = -self.x
-        self.y = -self.y
-        self.z = -self.z
-        return self
+        return Vector(-self.x, -self.y, -self.z)
 
     def __mul__(self, other):
         return Vector(other * self.x, other * self.y, other * self.z )
