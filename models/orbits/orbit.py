@@ -100,6 +100,8 @@ class Orbit:
         points, peri_point_index = self.__get_points_and_peri_point_index()
         # rotate basic orbit plane 
         rotation_axis = Vector.Z().cross(self.__normalVector)
+        if rotation_axis==Vector.zeros():
+            rotation_axis = Vector.Z()
         angle = math.acos(Vector.Z().dot(self.__normalVector))
         self.orbit_th = angle # TODO: hide it
         rotated_points = []
@@ -109,8 +111,7 @@ class Orbit:
 
         # find orbit direction and rotate it
         orbit_vector_point = rotated_points[peri_point_index]
-        orbit_vector = Vector(orbit_vector_point[0], orbit_vector_point[1], orbit_vector_point[2])
-        print(orbit_vector, self.__hVector, -self.__hVector)
+        orbit_vector = Vector(orbit_vector_point[0], orbit_vector_point[1], orbit_vector_point[2]).round8().normalize()
         orbit_velocity = orbit_vector.cross(-self.__hVector) / self.__h**2
         orbit_velocity.normalize()
         h_orbit = orbit_vector.cross(orbit_velocity)
@@ -143,7 +144,7 @@ class Orbit:
                 x = self.__a * math.sin(math.radians(deg)) - c 
                 y = self.__b * math.cos(math.radians(deg))
                 z = 0
-                point = Vec3(x, y, z) / 100
+                point = np.array([x, y, z]) / 100
                 points.append(point)
             points.append(points[0])
             peri_point_index = 90

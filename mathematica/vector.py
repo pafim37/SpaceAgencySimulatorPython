@@ -37,6 +37,12 @@ class Vector:
     def to_urs_Vec3(self):
         return urs.Vec3(self.x, self.y, self.z)
 
+    def round8(self):
+        self.x = round(self.x, 8)
+        self.y = round(self.y, 8)
+        self.z = round(self.z, 8)
+        return self
+
     def __add__(self, other):
         return Vector(self.x + other.x, self.y + other.y, self.z + other.z)
 
@@ -57,6 +63,9 @@ class Vector:
 
     def __truediv__(self, other):
         return Vector(self.x / other, self.y / other, self.z / other )
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y and self.z == other.z
 
     def __str__(self):
         return f"<{self.x}, {self.y}, {self.z}>"
